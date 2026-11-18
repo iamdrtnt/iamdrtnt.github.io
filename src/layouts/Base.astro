@@ -150,9 +150,7 @@ const graph = [
     <header class="mast">
       <div class="wrap bar">
         <a class="brand" href="/" aria-label="Mohammadreza Norouzi, home">
-          <span class="monogram">
-            mn<span>.</span>
-          </span>
+          <span class="monogram" aria-hidden="true">mn<span>.</span></span>
           <span class="brand-name">Mohammadreza Norouzi</span>
         </a>
         <nav id="navigation" aria-label="Main navigation">
@@ -160,9 +158,9 @@ const graph = [
             <a
               href={href}
               aria-current={path === href ? "page" : undefined}
-              class:list={[path.startsWith(href) && href !== "/" && "ancestor"]}
+              class:list={[path.startsWith(href) && href !== "/" && "ancestor", href === "/contact/" && "contact-nav"]}
             >
-              {text}
+              {text}{href === "/contact/" && <Icon name="diagonal" size={13} />}
             </a>
           ))}
         </nav>

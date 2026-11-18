@@ -1,12 +1,29 @@
 ---
 import Base from "../layouts/Base.astro";
-import Plate from "../components/Plate.astro";
+import CorticalSequence from "../components/CorticalSequence.astro";
 import Icon from "../components/Icon.astro";
-import SectionTitle from "../components/SectionTitle.astro";
 import ArticleCard from "../components/ArticleCard.astro";
 import { profile, projects, publications } from "../data/profile";
 import { articles } from "../lib/articles";
+import "../styles/home.css";
 const latest = (await articles()).slice(0, 3);
+const directions = [
+  {
+    title: "Medicine",
+    href: "/experience/",
+    detail: profile.experience[0].detail,
+  },
+  {
+    title: "Research",
+    href: "/research/",
+    detail: profile.research[0].description,
+  },
+  {
+    title: "Innovation",
+    href: "/research/#healthcare-innovation",
+    detail: profile.research[5].description,
+  },
+];
 ---
 
 <Base
@@ -14,151 +31,160 @@ const latest = (await articles()).slice(0, 3);
   description="Explore Mohammadreza Norouzi’s medical education, research interests, scientific writing, and professional background in Vancouver, British Columbia."
   type="ProfilePage"
 >
-  <section class="hero">
-    <div class="wrap hero-grid">
-      <div class="hero-copy">
-        <p class="eyebrow">
-          <span></span>Academic portfolio
-        </p>
-        <h1>
-          Mohammadreza <em>Norouzi</em>
-        </h1>
-        <p class="descriptor">
-          MD Graduate <i></i> Clinical Research <i></i> Healthcare Innovation
-        </p>
-        <p class="hero-intro">{profile.introduction}</p>
-        <div class="actions">
-          <a class="button mint" href="/about/">
-            About Me <Icon name="arrow" size={17} />
-          </a>
-          <a class="button ghost" href="/research/">
-            Explore Research <Icon name="diagonal" size={16} />
-          </a>
-        </div>
-      </div>
-      <Plate />
-    </div>
-  </section>
-  <div class="identity">
-    <div class="wrap facts">
-      <span>
-        <Icon name="pin" />
-        Vancouver, BC, Canada
-      </span>
-      <span>
-        <Icon name="cap" />
-        Doctor of Medicine
-      </span>
-      <span>
-        <Icon name="book" />
-        Scientific writing
-      </span>
-    </div>
-  </div>
-  <section class="wrap section">
-    <SectionTitle
-      label="Research interests"
-      title="Areas of inquiry"
-      link="Research portfolio"
-      href="/research/"
-    />
-    <div class="card-grid">
-      {profile.research.slice(0, 3).map((r, i) => (
-        <a
-          class="interest-card"
-          href={
-            "/research/#" +
-            ["clinical-research", "neuroscience", "ai-in-healthcare"][i]
-          }
-        >
-          <div class="card-top">
-            <span class="iconblock">
-              <Icon name={r.icon} size={24} />
-            </span>
-            <Icon name="diagonal" size={16} />
-          </div>
-          <h3>{r.title}</h3>
-          <p>{r.description}</p>
-        </a>
-      ))}
-    </div>
-    <div class="research-record">
+  <CorticalSequence />
+  <section class="trajectory">
+    <div class="wrap trajectory-grid">
       <div>
-        <span class="kicker">Featured research</span>
-        <p>
-          {projects[0]?.title ||
-            publications[0]?.title ||
-            "Project and publication records will appear here once verified."}
+        <p class="overline">
+          <i></i> Clinical perspective
         </p>
+        <p class="trajectory-intro">{profile.introduction}</p>
       </div>
-      <a class="textlink" href="/research/#publications">
-        Publications <Icon name="arrow" size={16} />
-      </a>
-    </div>
-  </section>
-  <section class="tint">
-    <div class="wrap section split">
-      <div>
-        <p class="eyebrow">
-          <span></span>About me
-        </p>
-        <h2>
-          From clinical practice
-          <br />
-          to research.
-        </h2>
-        <p class="prose-intro">{profile.bio}</p>
-        <a class="textlink" href="/about/">
-          Read my biography <Icon name="arrow" size={17} />
-        </a>
-        <h3 class="skills-title">Professional skills</h3>
-        <div class="tags">
-          {profile.skills.map((s) => (
-            <span>{s}</span>
-          ))}
-        </div>
-      </div>
-      <div class="summary-list">
-        <h3>Academic background</h3>
-        {profile.education.map((e) => (
-          <div>
-            <span class="kicker">{e.place}</span>
-            <h4>{e.title}</h4>
-            <p>{e.institution}</p>
-          </div>
+      <div class="directions">
+        {directions.map(({ title, href, detail }) => (
+          <a href={href}>
+            <h2>{title}</h2>
+            <p>{detail}</p>
+            <Icon name="diagonal" size={20} />
+          </a>
         ))}
-        <a class="textlink" href="/experience/">
-          Education and experience <Icon name="arrow" size={16} />
-        </a>
       </div>
     </div>
   </section>
-  <section class="wrap section">
-    <SectionTitle
-      label="Scientific writing"
-      title="Latest articles"
-      link="Visit the blog"
-      href="/blog/"
-    />
-    <div class="card-grid">
-      {latest.map((post) => (
-        <ArticleCard post={post} />
-      ))}
+  <section class="paper-scene">
+    <div class="wrap home-section">
+      <div class="chapter-line">
+        <span>About me</span>
+        <span>Biography &amp; education</span>
+      </div>
+      <div class="bio-spread">
+        <div>
+          <h2 class="display">
+            From clinical practice <em>to research.</em>
+          </h2>
+          <p class="bio-text">{profile.bio}</p>
+          <p class="disclosure">{profile.disclosure}</p>
+          <a class="textlink" href="/about/">
+            Read my biography <Icon name="arrow" size={17} />
+          </a>
+        </div>
+        <div class="education">
+          {profile.portrait && (
+            <img class="owner-portrait" {...profile.portrait} loading="lazy" />
+          )}
+          <h3 class="small-label">Academic background</h3>
+          {profile.education.map((e) => (
+            <div class="degree">
+              <h4>{e.title}</h4>
+              <p>
+                {e.institution}, {e.place}
+              </p>
+            </div>
+          ))}
+          <a class="textlink" href="/experience/">
+            Education and experience <Icon name="diagonal" size={15} />
+          </a>
+          <h3 class="small-label skills-heading">Professional skills</h3>
+          <ul class="skill-list">
+            {profile.skills.map((s) => (
+              <li>{s}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   </section>
-  <section class="wrap contact-band">
-    <div>
-      <p class="eyebrow">
-        <span></span>Contact
-      </p>
-      <h2>Connect professionally</h2>
-      <p>
-        Professional profiles and contact information for research and academic
-        enquiries.
-      </p>
+  <section class="research-scene">
+    <div class="wrap home-section">
+      <div class="chapter-line">
+        <span>Research &amp; publications</span>
+        <span>Research interests</span>
+      </div>
+      <div class="research-spread">
+        <div>
+          <span class="section-number" aria-hidden="true">
+            05
+          </span>
+          <h2 class="display">
+            Areas of <em>inquiry.</em>
+          </h2>
+          <a class="textlink" href="/research/">
+            Research portfolio <Icon name="arrow" size={17} />
+          </a>
+        </div>
+        <div class="research-index">
+          {profile.research.slice(0, 3).map((r) => (
+            <a
+              href={"/research/#" + r.title.toLowerCase().replaceAll(" ", "-")}
+            >
+              <div>
+                <h3>{r.title}</h3>
+                <p>{r.description}</p>
+              </div>
+              <Icon name="diagonal" size={20} />
+            </a>
+          ))}
+          <div class="publication-note">
+            <a class="textlink" href="/research/#publications">
+              Publications <Icon name="arrow" size={16} />
+            </a>
+            <p>
+              {projects[0]?.title ||
+                publications[0]?.title ||
+                "Project and publication records will appear here once verified."}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
-    <a class="button mint" href="/contact/">
-      Contact details <Icon name="arrow" size={16} />
-    </a>
+  </section>
+  <section class="paper-scene">
+    <div class="wrap home-section">
+      <div class="chapter-line">
+        <span>Scientific writing</span>
+        <span>Latest articles</span>
+      </div>
+      <div class="journal-head">
+        <h2 class="display">
+          The <em>journal.</em>
+        </h2>
+        <a class="textlink" href="/blog/">
+          Visit the blog <Icon name="arrow" size={17} />
+        </a>
+      </div>
+      <div class="journal-spread">
+        {latest.map((post) => (
+          <ArticleCard post={post} />
+        ))}
+      </div>
+    </div>
+  </section>
+  <section class="closing">
+    <div class="wrap home-section">
+      <p class="overline">
+        <i></i> Contact
+      </p>
+      <div class="closing-grid">
+        <h2 class="display">
+          Connect <em>professionally.</em>
+        </h2>
+        <div>
+          <p>
+            Professional profiles and contact information for research and
+            academic enquiries.
+          </p>
+          <div class="hero-actions">
+            <a class="button ivory" href="/contact/">
+              Contact details <Icon name="arrow" size={16} />
+            </a>
+            {profile.profiles.map((p) => (
+              <a class="quiet-link" href={p.url} rel="me">
+                {p.label} <Icon name="diagonal" size={14} />
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 </Base>

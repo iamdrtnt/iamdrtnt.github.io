@@ -74,7 +74,7 @@ A future Codex request can say: “Write an English blog article about how to as
 - Add a publication to `publications` only after checking its bibliographic record. Required fields are title, authors, journal, year, and type. Optional fields are DOI (identifier only), abstract or summary, canonical publication URL, and PubMed URL. The research and CV pages share the same component. Keep personal research projects and presentations in their own arrays.
 - Put verified public contact links (including ORCID, LinkedIn, Google Scholar, or ResearchGate) in `profiles`. Add a public email only with the owner’s approval. The site does not publish private contact or account details.
 - For a CV download, place the approved, accessible PDF under `public/documents/` and set `cvPath` to its root-relative URL. Clear `cvPath` when removing the document. The empty state has no download link.
-- To add an authentic portrait, supply `profile.portrait` with `src`, `alt`, `width`, and `height`. It will occupy the illustration’s reserved space.
+- To add an authentic portrait, supply `profile.portrait` with `src`, `alt`, `width`, and `height`. It will appear beside the academic background on the homepage.
 - Add new top-level public routes to the sitemap’s source list in `src/data/profile.ts` or extend the sitemap generator when a page belongs outside the main navigation.
 
 ## Search Console and a future domain
@@ -91,6 +91,6 @@ Run `npm ci && npm run build && npm test`. The tests inspect every generated HTM
 
 ## Visual credits
 
-The homepage plate and social image use an original rendering of the left cerebral hemisphere from the FreeSurfer fsaverage5 reference surface distributed by Nilearn. This is an anatomical template. The illustration contains no patient or owner imaging. [Source surface](https://github.com/nilearn/nilearn/blob/8a558ba11867c5f1ae91f3abe4ca5a831d419e7e/nilearn/datasets/data/fsaverage5/pial_left.gii.gz) · [Nilearn dataset description](https://nilearn.github.io/stable/modules/generated/nilearn.datasets.fetch_surf_fsaverage.html)
+The homepage plates and social image use original renderings of the left cerebral hemisphere from the FreeSurfer fsaverage5 reference surface distributed by Nilearn. This is an anatomical template. The first homepage plate follows the folded pial surface with silver contours. The second shows three separated portions of the same reference mesh. Both are exported as WebP so the scroll sequence works without a 3D runtime. The illustrations contain no patient or owner imaging. [Source surface](https://github.com/nilearn/nilearn/blob/8a558ba11867c5f1ae91f3abe4ca5a831d419e7e/nilearn/datasets/data/fsaverage5/pial_left.gii.gz) · [Nilearn dataset description](https://nilearn.github.io/stable/modules/generated/nilearn.datasets.fetch_surf_fsaverage.html)
 
 Newsreader and DM Sans are bundled from Fontsource and served locally under their SIL Open Font Licenses. Font, Nilearn, and FreeSurfer notices are in `public/licenses/`.
