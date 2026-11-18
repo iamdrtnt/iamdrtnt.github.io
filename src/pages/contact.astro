@@ -1,8 +1,16 @@
 ---
 import Base from "../layouts/Base.astro";
-import PageHead from "../components/PageHead.astro";
 import Icon from "../components/Icon.astro";
 import { profile } from "../data/profile";
+
+const interests = [
+  "Clinical & Medical Research",
+  "Healthcare Innovation",
+  "Digital Health",
+  "Startup Partnerships",
+  "Academic Opportunities",
+  "Scientific Writing",
+];
 ---
 
 <Base
@@ -10,37 +18,342 @@ import { profile } from "../data/profile";
   description="Find verified public profiles and professional contact information for Mohammadreza Norouzi, a medical graduate based in Vancouver, Canada."
   label="Contact"
 >
-  <PageHead
-    title="Let's Connect."
-    parent="Meaningful Connections. Better Healthcare."
-    description={"I believe meaningful progress in healthcare begins with exchanging ideas, sharing knowledge, and bringing different perspectives together. I welcome opportunities to connect with researchers, healthcare professionals, entrepreneurs, and organisations working to advance medicine and improve healthcare systems. Whether you're interested in research collaboration, healthcare innovation, startup partnerships, academic opportunities, scientific writing, or exploring new professional possibilities, I'd be glad to connect."}
-  />
-  <div class="wrap section editorial">
-    <aside class="aside-card">
-      <Icon name="pin" size={26} />
-      <h2>Location</h2>
-      <p>{profile.location}</p>
-    </aside>
-    <div class="prose">
-      <h2>Professional profiles</h2>
-      <div class="profile-list">
-        {profile.profiles.map((p) => (
-          <a href={p.url} rel="me">
-            <span>{p.label}</span>
-            <Icon name="diagonal" size={19} />
+  <div class="contact" data-contact>
+    <div class="contact-light" aria-hidden="true"></div>
+    <div class="wrap contact-wrap">
+      <header class="invitation" data-contact-stage="invitation">
+        <p class="eyebrow">
+          <span aria-hidden="true"></span>
+          Contact / Collaboration
+        </p>
+        <h1>Let's Build <em>Better Healthcare.</em></h1>
+      </header>
+
+      <div class="contact-details">
+        <div class="contact-intro" data-contact-stage="intro">
+          <p class="contact-lead">
+            Meaningful progress begins with meaningful connections.
+          </p>
+          <p>
+            I'm interested in connecting with researchers, healthcare professionals,
+            entrepreneurs, and organisations working to advance medicine and improve
+            healthcare systems.
+          </p>
+          <p>
+            Whether you're exploring research collaboration, digital health, healthcare
+            innovation, startup partnerships, academic opportunities, or scientific
+            writing, I'd welcome the conversation.
+          </p>
+        </div>
+
+        <section
+          class="contact-channels"
+          aria-labelledby="contact-email"
+          data-contact-stage="channels"
+        >
+          <h2 id="contact-email" class="small-label">Direct email</h2>
+          <a class="button contact-button" href={"mailto:" + profile.email}>
+            Start a Conversation
+            <Icon name="arrow" size={18} />
           </a>
-        ))}
+          <p class="contact-address">{profile.email}</p>
+          <ul class="contact-profiles" role="list" aria-label="Professional profiles">
+            {
+              profile.profiles.map(({ label, url }) => (
+                <li>
+                  <a href={url} rel="me">
+                    <span>{label}</span>
+                    <Icon name="diagonal" size={16} />
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
       </div>
-      <h2>Email enquiries</h2>
-      {profile.email ? (
-        <a href={"mailto:" + profile.email}>{profile.email}</a>
-      ) : (
-        <p>A public email address has not been provided.</p>
-      )}
-      <p class="note">
-        For an overview of my training and research interests, see my{" "}
-        <a href="/cv/">curriculum vitae</a>.
+
+      <section class="contact-interests" aria-labelledby="contact-interests">
+        <h2 id="contact-interests" class="small-label">Open to collaboration</h2>
+        <ul class="tags" role="list">
+          {
+            interests.map((interest) => (
+              <li><span>{interest}</span></li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <p class="contact-location">
+        <Icon name="pin" size={16} />
+        {profile.location}
       </p>
     </div>
   </div>
 </Base>
+
+<style>
+  .contact {
+    --contact-accent: light-dark(#365780, #b2c7e1);
+    --contact-start: light-dark(var(--paper), #16181b);
+    position: relative;
+    isolation: isolate;
+    background: linear-gradient(180deg, var(--contact-start), var(--paper) 80%);
+  }
+
+  .contact-light {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: -1;
+    height: min(100%, 52rem);
+    pointer-events: none;
+    background:
+      radial-gradient(
+        ellipse 59% 53% at var(--light-centre, 63%) 27%,
+        light-dark(#9eb6ce42, #54769b41),
+        transparent 100%
+      ),
+      radial-gradient(
+        ellipse 33% 30% at var(--light-highlight, 74%) 17%,
+        light-dark(#fff9ecaa, #bacce517),
+        transparent 100%
+      );
+  }
+
+  .contact-wrap {
+    width: min(86%, 77rem);
+    padding-block: clamp(4rem, 8vw, 8rem) clamp(2.75rem, 5vw, 5rem);
+  }
+
+  .invitation {
+    margin-bottom: clamp(2rem, 4.25vw, 4rem);
+  }
+
+  .invitation .eyebrow,
+  .small-label {
+    color: var(--contact-accent);
+  }
+
+  h1 {
+    margin-top: clamp(1.45rem, 3vw, 2.8rem);
+    font: 380 clamp(3.1rem, 9.35vw, 9rem)/0.92 var(--serif);
+    letter-spacing: -0.058em;
+  }
+
+  h1 em {
+    display: block;
+    color: var(--contact-accent);
+    font-weight: 360;
+    text-wrap: balance;
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .contact-details {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(2.5rem, 10vw, 10rem);
+    border-top: 1px solid var(--line);
+    padding-top: clamp(1.6rem, 3.55vw, 3.25rem);
+  }
+
+  .contact-intro {
+    display: grid;
+    gap: 0.9rem;
+    max-width: 51ch;
+    line-height: 1.66;
+  }
+
+  .contact-lead {
+    color: var(--ink);
+    font: 400 clamp(1.65rem, 2.6vw, 2.3rem)/1.05 var(--serif);
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+
+  .contact-button {
+    justify-content: space-between;
+    margin-top: 0.8rem;
+    max-width: 100%;
+    min-height: 50px;
+    gap: 1.4rem;
+    padding-inline: 1.2rem;
+    border: 1px solid transparent;
+    background: var(--contact-accent);
+    color: light-dark(#fff, #151c25);
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+
+  .contact-button:is(:hover, :focus-visible) {
+    background: transparent;
+    border-color: var(--contact-accent);
+    color: var(--contact-accent);
+  }
+
+  .contact-address {
+    margin-top: 0.55rem;
+    font-size: 0.875rem;
+    overflow-wrap: anywhere;
+  }
+
+  .contact-profiles,
+  .contact-interests ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .contact-profiles {
+    margin: 1.45rem 0 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .contact-profiles a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 47px;
+    gap: 1rem;
+    border-bottom: 1px solid var(--line);
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 0.95rem;
+    font-weight: 550;
+    transition: color 0.2s;
+  }
+
+  .contact-profiles a:is(:hover, :focus-visible) {
+    color: var(--contact-accent);
+    text-decoration: underline;
+  }
+
+  .contact-button :global(svg),
+  .contact-profiles :global(svg) {
+    flex: none;
+    transition: transform 0.2s;
+  }
+
+  .contact-profiles :global(svg) {
+    color: var(--contact-accent);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .contact-button:is(:hover, :focus-visible) :global(svg) {
+      transform: translateX(3px);
+    }
+
+    .contact-profiles a:is(:hover, :focus-visible) :global(svg) {
+      transform: translate(2px, -2px);
+    }
+  }
+
+  .contact-interests {
+    margin-top: clamp(2.8rem, 5.7vw, 5.25rem);
+    border-top: 1px solid var(--line);
+    padding-top: clamp(1.4rem, 2.8vw, 2.25rem);
+  }
+
+  .contact-interests ul {
+    margin: 0.8rem 0 0;
+  }
+
+  .contact-interests li span {
+    display: block;
+    color: var(--muted);
+  }
+
+  .contact-location {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: clamp(1.8rem, 4vw, 3.2rem);
+    font-size: 0.85rem;
+  }
+
+  .contact-location :global(svg) {
+    color: var(--contact-accent);
+    flex: none;
+  }
+
+  @media (width < 760px) {
+    .contact-wrap {
+      width: 90%;
+    }
+
+    h1 {
+      font-size: clamp(2.85rem, 12.7vw, 4.44rem);
+    }
+
+    .contact-lead {
+      font-size: clamp(1.45rem, 6.8vw, 1.65rem);
+    }
+
+    .contact-details {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .contact-channels {
+      width: min(100%, 30rem);
+    }
+
+    .contact-light {
+      --light-centre: 78%;
+      --light-highlight: 89%;
+      height: 34rem;
+    }
+  }
+</style>
+
+<script>
+  const contact = document.querySelector<HTMLElement>("[data-contact]");
+  const motion = matchMedia("(prefers-reduced-motion: no-preference)");
+
+  if (contact && motion.matches && "IntersectionObserver" in window) {
+    void import("gsap").then(({ gsap }) => {
+      const media = gsap.matchMedia(contact);
+      media.add(motion.media, (context) => {
+        const observer = new IntersectionObserver((entries) => {
+          context.add(() => {
+            for (const { isIntersecting, target } of entries) {
+              if (!isIntersecting) continue;
+              observer.unobserve(target);
+
+              // Keep the final state settled for anyone already using the keyboard.
+              if (target.matches(":focus-within")) continue;
+
+              const distance = matchMedia("(min-width: 760px)").matches ? 10 : 5;
+              const timeline = gsap.timeline({
+                defaults: {
+                  duration: 0.42,
+                  ease: "power2.out",
+                  clearProps: "opacity,transform",
+                },
+              });
+
+              if (target.matches('[data-contact-stage="invitation"]')) {
+                timeline
+                  .from(".invitation .eyebrow", { opacity: 0.78 }, 0)
+                  .from(".invitation h1", { opacity: 0.88, y: distance }, 0.06)
+                  .from(".contact-light", { opacity: 0.55, duration: 0.58 }, 0.12);
+              } else if (target.matches('[data-contact-stage="intro"]')) {
+                timeline.from(target, { opacity: 0.86, y: distance }, 0.14);
+              } else {
+                timeline.from(
+                  ".contact-button, .contact-profiles li",
+                  { opacity: 0.85, y: distance / 2, stagger: 0.055 },
+                  0.2,
+                );
+              }
+            }
+          });
+        });
+
+        const stages = contact.querySelectorAll("[data-contact-stage]");
+        stages.forEach((stage) => observer.observe(stage));
+
+        return () => observer.disconnect();
+      });
+    }).catch(() => {
+      // The contact page is fully readable before any animation loads.
+    });
+  }
+</script>
