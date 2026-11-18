@@ -1,0 +1,112 @@
+---
+import Icon from "./Icon.astro";
+import Plate from "./Plate.astro";
+---
+
+<div class="opening">
+  <div class="sequence wrap" data-sequence>
+    <section class="intro scene-copy" aria-labelledby="name">
+      <div class="scene-text">
+        <p class="overline">
+          <i></i> Academic portfolio
+        </p>
+        <h1 id="name">
+          Mohammadreza <em>Norouzi</em>
+        </h1>
+        <p class="identity-line">
+          MD Graduate <i>/</i> Clinical Research <i>/</i> Healthcare Innovation
+        </p>
+        <div class="hero-actions">
+          <a class="button ivory" href="/about/">
+            About me <Icon name="arrow" size={16} />
+          </a>
+          <a class="quiet-link" href="/research/">
+            Explore research <Icon name="diagonal" size={15} />
+          </a>
+        </div>
+      </div>
+      <a class="scroll-cue" href="#anatomy">
+        <span aria-hidden="true">↓</span> Scroll to explore
+      </a>
+    </section>
+    <div class="figure-stage">
+      <Plate />
+      <Plate sections />
+    </div>
+    <section
+      class="anatomy scene-copy"
+      id="anatomy"
+      aria-labelledby="anatomy-title"
+    >
+      <div class="scene-text">
+        <p class="overline">
+          <i></i> Anatomical study
+        </p>
+        <h2 id="anatomy-title">
+          Beneath the <em>surface.</em>
+        </h2>
+        <p class="scene-description">
+          Each line follows a fold of the cerebral cortex. Separating the
+          surface into three sections offers another view of the same
+          hemisphere.
+        </p>
+        <p class="figure-source">
+          Anatomical reference <span>/</span> FreeSurfer fsaverage5
+        </p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  const sequence = document.querySelector<HTMLElement>("[data-sequence]")!;
+  const intro = sequence.querySelector<HTMLElement>(".intro")!;
+  // Portrait tablets use the stacked plates so each study can fill the screen width.
+  const motion = matchMedia(
+    "(min-width: 760px) and (orientation: landscape) and (min-height: 550px) and (prefers-reduced-motion: no-preference), (min-width: 1051px) and (min-height: 550px) and (prefers-reduced-motion: no-preference)",
+  );
+  let frame = 0;
+  let visible = false;
+  const clamp = (n: number) => Math.max(0, Math.min(1, n));
+  function paint() {
+    frame = 0;
+    const progress = clamp(
+      -sequence.getBoundingClientRect().top / intro.offsetHeight,
+    );
+    const exposure = clamp((progress - 0.18) / 0.54);
+    sequence.style.setProperty("--turn", (progress * -13).toFixed(2) + "deg");
+    sequence.style.setProperty("--tilt", (progress * 4).toFixed(2) + "deg");
+    sequence.style.setProperty("--exposure", exposure.toFixed(3));
+    sequence.style.setProperty(
+      "--separate",
+      (clamp((progress - 0.28) / 0.65) * 8).toFixed(2) + "%",
+    );
+    sequence.style.setProperty("--lift", (progress * 24).toFixed(2) + "px");
+  }
+  function schedule() {
+    if (visible && motion.matches && !document.hidden && !frame)
+      frame = requestAnimationFrame(paint);
+  }
+  function sync() {
+    sequence.classList.toggle("scrub", motion.matches);
+    schedule();
+  }
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible) {
+        window.addEventListener("scroll", schedule, { passive: true });
+        schedule();
+      } else {
+        window.removeEventListener("scroll", schedule);
+        cancelAnimationFrame(frame);
+        frame = 0;
+      }
+    });
+    observer.observe(sequence);
+    motion.addEventListener("change", sync);
+    window.addEventListener("resize", schedule);
+    document.addEventListener("visibilitychange", schedule);
+    sync();
+  }
+</script>
