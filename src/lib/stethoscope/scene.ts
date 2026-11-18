@@ -119,8 +119,6 @@ export function mountScene(canvas: HTMLCanvasElement, context?: WebGL2RenderingC
   const camera = new THREE.PerspectiveCamera(30, 1, .1, 100);
   const target = new THREE.Vector3(), direction = new THREE.Vector3();
   const shot = new Float64Array(8);
-  const rimAnchor = new THREE.Vector3();
-  const labelPosition = new THREE.Vector2();
   let width = 0, height = 0, progress = 0, densityLimit = 1.8;
   let lastRender = 0, slowFrames = 0;
   let disposed = false;
@@ -177,12 +175,6 @@ export function mountScene(canvas: HTMLCanvasElement, context?: WebGL2RenderingC
   render(0);
   return {
     render,
-    // Pin the HTML leader to the upper edge of the polished front bezel. Both
-    // the moving chestpiece and the camera contribute to the projected point.
-    projectDiaphragmRim() {
-      model.chest.localToWorld(rimAnchor.set(0, .595, .143)).project(camera);
-      return labelPosition.set((rimAnchor.x + 1) * .5 * width, (1 - rimAnchor.y) * .5 * height);
-    },
     resize() {
       if (disposed) return;
       size();

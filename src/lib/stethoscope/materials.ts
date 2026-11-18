@@ -71,32 +71,6 @@ function diaphragmStamp() {
     ctx.stroke();
   }
 
-  // An engraved owner's mark in the face of the diaphragm, with a narrow
-  // catch light on the lower edge of the cut.
-  const mark = new Path2D("M-67 25 V-24 L-44 3 L-21 -24 V25 M-4 25 V-24 L41 25 V-24");
-  ctx.lineWidth = 4.2;
-  ctx.lineJoin = "round";
-  ctx.translate(13, 1.8);
-  ctx.strokeStyle = "#202428";
-  ctx.stroke(mark);
-  ctx.translate(0, -1.8);
-  ctx.strokeStyle = "#a1a8ac";
-  ctx.stroke(mark);
-  ctx.translate(-13, 0);
-
-  const label = "ACOUSTIC DIAPHRAGM";
-  ctx.fillStyle = "#939c9f";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.font = "13px sans-serif";
-  const spacing = 0.061;
-  for (let i = 0; i < label.length; i++) {
-    const angle = (i - (label.length - 1) / 2) * spacing;
-    ctx.save();
-    ctx.rotate(-angle);
-    ctx.fillText(label[i], 0, 181);
-    ctx.restore();
-  }
   const map = new CanvasTexture(canvas);
   map.colorSpace = SRGBColorSpace;
   return map;

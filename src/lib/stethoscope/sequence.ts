@@ -14,7 +14,6 @@ export function startStudy(root: HTMLElement) {
   );
   const next = root.querySelector<HTMLAnchorElement>(".study-next")!;
   const nextLabel = next.querySelector<HTMLElement>("[data-next-label]")!;
-  const leader = root.querySelector<HTMLElement>(".study-leader")!;
   const figureNumber = root.querySelector<HTMLElement>("[data-figure-no]")!;
   const figureLabel = root.querySelector<HTMLElement>("[data-figure-label]")!;
   const motion = matchMedia(
@@ -118,20 +117,6 @@ export function startStudy(root: HTMLElement) {
         });
         try {
           scene.render(position.progress);
-          if (window.innerWidth >= 960) {
-            const rim = scene.projectDiaphragmRim();
-            const t = position.progress;
-            const presence = Math.max(
-              0,
-              Math.min(1, Math.max((0.34 - t) / 0.07, (t - 0.89) / 0.08)),
-            );
-            const clearance = Math.max(
-              0,
-              Math.min(1, (rim.x - 120) / 28, (rim.y - 40) / 20),
-            );
-            leader.style.transform = `translate(${rim.x - 118}px, ${rim.y - 35}px)`;
-            leader.style.opacity = String(presence * clearance);
-          }
         } catch {
           teardown?.();
           teardown = undefined;
