@@ -1,0 +1,128 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHead from "../components/PageHead.astro";
+import Icon from "../components/Icon.astro";
+import PublicationCard from "../components/Publication.astro";
+import { profile, achievements, publications } from "../data/profile";
+---
+
+<Base
+  title="Curriculum Vitae | Mohammadreza Norouzi"
+  description="View Mohammadreza Norouzi’s online CV, including education, medical and research experience, scientific writing, and professional interests."
+  label="Curriculum vitae"
+>
+  <PageHead
+    title="Curriculum vitae"
+    description="Mohammadreza Norouzi · Vancouver, British Columbia, Canada"
+  />
+  <div class="wrap section dossier">
+    <div class="cv-download">
+      {profile.cvPath ? (
+        <a class="button primary" href={profile.cvPath} download>
+          <Icon name="file" />
+          Download CV
+        </a>
+      ) : (
+        <span class="pdf">
+          <Icon name="file" />
+          CV download · PDF available soon
+        </span>
+      )}
+    </div>
+    <section>
+      <h2>Professional summary</h2>
+      <div>
+        <p>{profile.bio}</p>
+        <p class="note">{profile.disclosure}</p>
+      </div>
+    </section>
+    <section>
+      <h2>Education</h2>
+      <div>
+        {profile.education
+          .filter((e) => e.title.includes("Medicine"))
+          .map((e) => (
+            <div>
+              <h3>{e.title}</h3>
+              <p>
+                {e.institution}, {e.place}
+              </p>
+            </div>
+          ))}
+      </div>
+    </section>
+    <section>
+      <h2>Professional experience</h2>
+      <div>
+        {profile.experience.slice(0, 2).map((e) => (
+          <div>
+            <h3>{e.title}</h3>
+            <p>{e.detail}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+    <section>
+      <h2>Research experience</h2>
+      <p>{profile.experience[2].detail}</p>
+    </section>
+    <section>
+      <h2>Publications</h2>
+      <div>
+        {publications.length ? (
+          publications.map((record) => <PublicationCard record={record} />)
+        ) : (
+          <a href="/research/">
+            View publication status in the research portfolio
+          </a>
+        )}
+      </div>
+    </section>
+    <section>
+      <h2>Certifications</h2>
+      <div>
+        {profile.education
+          .filter((e) => e.title.includes("certificate"))
+          .map((e) => (
+            <div>
+              <h3>{e.title}</h3>
+              <p>
+                {e.institution}, {e.place}
+              </p>
+            </div>
+          ))}
+      </div>
+    </section>
+    <section>
+      <h2>Academic achievements</h2>
+      <div>
+        {achievements.length ? (
+          <ul>
+            {achievements.map((a) => (
+              <li>{a}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>No additional academic distinctions are listed.</p>
+        )}
+      </div>
+    </section>
+    <section>
+      <h2>Technical skills</h2>
+      <div class="tags">
+        {profile.skills.slice(0, 2).map((s) => (
+          <span>{s}</span>
+        ))}
+      </div>
+    </section>
+    <section>
+      <h2>Professional interests</h2>
+      <div class="tags">
+        {profile.research.map((r) => (
+          <span>{r.title}</span>
+        ))}
+        <span>Health services research</span>
+      </div>
+    </section>
+  </div>
+</Base>

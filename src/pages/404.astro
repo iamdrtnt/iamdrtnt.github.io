@@ -1,0 +1,21 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHead from "../components/PageHead.astro";
+---
+
+<Base
+  title="Page Not Found | Mohammadreza Norouzi"
+  description="The page could not be found. Return to Mohammadreza Norouzi’s academic portfolio."
+  noindex
+>
+  <PageHead
+    parent="Error 404"
+    title="Page not found"
+    description="This address may have changed."
+  />
+  <div class="wrap section">
+    <a class="button primary" href="/">
+      Return to the homepage
+    </a>
+  </div>
+</Base>

@@ -1,0 +1,144 @@
+---
+import { render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import ArticleCard from "../../components/ArticleCard.astro";
+import Icon from "../../components/Icon.astro";
+import { profile } from "../../data/profile";
+import {
+  articles,
+  dateLabel,
+  articleUrl,
+  readingTime,
+} from "../../lib/articles";
+export async function getStaticPaths() {
+  return (await articles()).map((post) => ({
+    params: { id: post.id },
+    props: { post },
+  }));
+}
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const p = post.data;
+const url = new URL(articleUrl(post.id), Astro.site).href;
+const related = (await articles())
+  .filter((a) => a.id !== post.id)
+  .sort(
+    (a, b) =>
+      Number(b.data.category === p.category) -
+      Number(a.data.category === p.category),
+  )
+  .slice(0, 2);
+const sections = headings.filter((h) => h.depth === 2);
+const schema = {
+  headline: p.title,
+  author: { "@id": new URL("/#person", Astro.site).href },
+  datePublished: p.date.toISOString(),
+  articleSection: p.category,
+  keywords: p.tags,
+  image: new URL(p.image?.src || "/images/social-card.png", Astro.site).href,
+  mainEntityOfPage: url,
+};
+---
+
+<Base
+  title={p.title + " | Mohammadreza Norouzi"}
+  description={p.description}
+  label={p.title}
+  type="BlogPosting"
+  extraSchema={schema}
+  date={p.date}
+  image={p.image?.src}
+>
+  <div class="page-head">
+    <div class="wrap article-head">
+      <a class="crumb" href="/blog/">
+        ← Back to blog
+      </a>
+      <p class="eyebrow">
+        <span></span>
+        {p.category}
+      </p>
+      <h1>{p.title}</h1>
+      <p class="lead">{p.description}</p>
+      <p class="byline">
+        <a href="/about/">{profile.name}</a> ·{" "}
+        <time datetime={p.date.toISOString()}>{dateLabel(p.date)}</time> ·{" "}
+        {readingTime(post)} min read
+      </p>
+    </div>
+  </div>
+  <div class="wrap section editorial article-layout">
+    <aside>
+      {sections.length >= 3 && (
+        <nav class="aside-card contents" aria-label="Table of contents">
+          <h2>On this page</h2>
+          {sections.map((h) => (
+            <a href={"#" + h.slug}>{h.text}</a>
+          ))}
+        </nav>
+      )}
+    </aside>
+    <div class="prose">
+      {p.image && (
+        <figure>
+          <img
+            src={p.image.src}
+            alt={p.image.alt}
+            width={p.image.width}
+            height={p.image.height}
+            loading="lazy"
+          />
+          {p.image.caption && <figcaption>{p.image.caption}</figcaption>}
+        </figure>
+      )}
+      <Content />
+      <div class="tags">
+        {p.tags.map((t) => (
+          <span>{t}</span>
+        ))}
+      </div>
+      <div class="share">
+        <a
+          href={
+            "https://www.linkedin.com/sharing/share-offsite/?url=" +
+            encodeURIComponent(url)
+          }
+        >
+          Share on LinkedIn <Icon name="diagonal" size={15} />
+        </a>
+        <button class="copy" data-url={url}>
+          <Icon name="link" size={16} />
+          Copy article link
+        </button>
+        <span aria-live="polite" id="copy-status"></span>
+      </div>
+    </div>
+  </div>
+  {related.length > 0 && (
+    <section class="tint">
+      <div class="wrap section">
+        <h2>Related articles</h2>
+        <div class="card-grid related spaced">
+          {related.map((post) => (
+            <ArticleCard post={post} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+  <script>
+    const copy = document.querySelector<HTMLButtonElement>(".copy")!;
+    if (navigator.clipboard) {
+      copy.classList.add("available");
+      copy.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(copy.dataset.url!);
+          document.querySelector("#copy-status")!.textContent = "Link copied.";
+        } catch {
+          document.querySelector("#copy-status")!.textContent =
+            "Copy the address from your browser.";
+        }
+      });
+    }
+  </script>
+</Base>

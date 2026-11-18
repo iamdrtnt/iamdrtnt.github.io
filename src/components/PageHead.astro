@@ -1,0 +1,19 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  parent?: string;
+}
+const { title, description, parent = "Academic portfolio" } = Astro.props;
+---
+
+<div class="page-head">
+  <div class="wrap">
+    <p class="eyebrow">
+      <span></span>
+      {parent}
+    </p>
+    <h1>{title}</h1>
+    <p class="lead">{description}</p>
+  </div>
+</div>

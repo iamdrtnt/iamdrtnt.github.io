@@ -1,0 +1,55 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHead from "../components/PageHead.astro";
+import Icon from "../components/Icon.astro";
+import { profile } from "../data/profile";
+---
+
+<Base
+  title="About Mohammadreza Norouzi | Medical Background and Biography"
+  description="Read about Mohammadreza Norouzi’s medical education in Iran, prior general practice, healthcare management training, and current research interests in Vancouver."
+  label="About"
+  type="ProfilePage"
+>
+  <PageHead
+    title="About me"
+    description="A medical background connecting primary care, scientific writing, and healthcare research."
+  />
+  <div class="wrap section editorial">
+    <aside class="aside-card">
+      <Icon name="pin" size={26} />
+      <h2>Based in Vancouver</h2>
+      <p>British Columbia, Canada</p>
+      <a class="textlink" href="/cv/">
+        Curriculum vitae <Icon name="arrow" size={16} />
+      </a>
+    </aside>
+    <div class="prose">
+      <h2>Professional biography</h2>
+      <p class="lead">{profile.bio}</p>
+      <h2>Medicine and management</h2>
+      <p>
+        I earned my Doctor of Medicine at Fasa University of Medical Sciences.
+        My subsequent clinical experience includes independent general medical
+        practice in Iran and work in primary healthcare.
+      </p>
+      <p>
+        My Executive Healthcare MBA certificate from Shahid Beheshti University
+        of Medical Sciences adds a management perspective to my medical
+        education. Together, these backgrounds inform my interest in how
+        evidence reaches the people and services that use it.
+      </p>
+      <h2>Research direction</h2>
+      <p>
+        My interests include clinical research, neuroscience, epidemiology, and
+        artificial intelligence in healthcare. I am especially interested in
+        questions that connect research methods with decisions in practice.
+        Scientific writing is one way I explore and communicate those questions.
+      </p>
+      <div class="note">{profile.disclosure}</div>
+      <a class="textlink" href="/experience/">
+        Explore my education and experience <Icon name="arrow" size={17} />
+      </a>
+    </div>
+  </div>
+</Base>
