@@ -1,0 +1,173 @@
+---
+import Icon from "./Icon.astro";
+import "../styles/stethoscope.css";
+
+const chapters = [
+  { id: "introduction", label: "Introduction", figure: "Acoustic stethoscope" },
+  {
+    id: "medicine",
+    label: "Medicine",
+    figure: "Chestpiece & diaphragm",
+    first: "Grounded in",
+    last: "Clinical Practice.",
+    detail:
+      "My medical education led to independent general practice and primary healthcare in Iran.",
+    link: "/experience/",
+    action: "Clinical experience",
+  },
+  {
+    id: "research-study",
+    label: "Research",
+    figure: "Acoustic pathway",
+    first: "Driven by",
+    last: "Scientific Inquiry.",
+    detail:
+      "Clinical questions guide my research and scientific writing, from reading a trial to weighing the evidence for a decision.",
+    link: "/research/#publications",
+    action: "Research & publications",
+  },
+  {
+    id: "innovation",
+    label: "Innovation",
+    figure: "Binaural assembly",
+    first: "Shaped by",
+    last: "Strategic Thinking.",
+    detail:
+      "My Executive Healthcare MBA certificate informs how I think about management, system design, and the delivery of care.",
+    link: "/research/#healthcare-innovation",
+    action: "Healthcare innovation",
+  },
+  {
+    id: "resolution",
+    label: "Resolution",
+    figure: "Assembled instrument",
+    first: "Explore the",
+    last: "Portfolio.",
+    detail:
+      "Explore my clinical background, research interests, and essays on reading and applying medical evidence.",
+    link: "/blog/",
+    action: "Read the journal",
+  },
+];
+---
+
+<section class="study" data-study aria-label="A stethoscope in five chapters">
+  <div class="study-stops" aria-hidden="true"></div>
+  <div class="study-shell">
+    <div class="study-arrangement wrap">
+      <div class="study-copy">
+        {
+          chapters.map((chapter, i) => (
+            <section
+              class="study-chapter"
+              id={chapter.id}
+              data-chapter
+              data-figure={chapter.figure}
+              aria-labelledby={`${chapter.id}-title`}
+            >
+              {i === 0 ? (
+                <>
+                  <p class="study-kicker">
+                    <Icon name="activity" size={27} /> Academic portfolio
+                  </p>
+                  <h1 class="study-name" id={`${chapter.id}-title`}>
+                    Mohammadreza <em>Norouzi</em>
+                  </h1>
+                  <p class="study-identity">
+                    <span>MD Graduate</span> <b>|</b>{" "}
+                    <span>Clinical Research</span> <b>|</b>{" "}
+                    <span>Healthcare Innovation</span>
+                  </p>
+                  <div class="study-actions">
+                    <a class="study-button" href="#portfolio">
+                      Explore portfolio <Icon name="arrow" size={16} />
+                    </a>
+                    <a class="study-link" href="/about/">
+                      About me <Icon name="diagonal" size={14} />
+                    </a>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p class="study-kicker">
+                    <Icon
+                      name={["", "activity", "network", "layers", "book"][i]}
+                      size={24}
+                    />
+                    {chapter.label}
+                  </p>
+                  <h2 class="study-title" id={`${chapter.id}-title`}>
+                    {chapter.first} <em>{chapter.last}</em>
+                  </h2>
+                  <p class="study-description">{chapter.detail}</p>
+                  <div class="study-actions">
+                    <a class="study-link" href={chapter.link}>
+                      {chapter.action} <Icon name="diagonal" size={15} />
+                    </a>
+                    {i === 4 && (
+                      <a class="study-link" href="#portfolio">
+                        Continue to portfolio <Icon name="arrow" size={15} />
+                      </a>
+                    )}
+                  </div>
+                </>
+              )}
+            </section>
+          ))
+        }
+      </div>
+      <figure class="study-figure">
+        <div class="study-plate">
+          <img
+            class="study-poster"
+            src="/images/stethoscope.webp"
+            width="1200"
+            height="1000"
+            alt="A silver and graphite acoustic stethoscope, with a round diaphragm, flexible tubing, and paired metal ear tubes."
+            fetchpriority="high"
+          />
+          <canvas data-instrument aria-hidden="true"></canvas>
+          <div class="study-leader" aria-hidden="true">
+            <span>Diaphragm</span>
+            <svg viewBox="0 0 121 38" fill="none"
+              ><path d="M0 12.5H92L118 35"></path><circle cx="118" cy="35" r="2"
+              ></circle></svg
+            >
+          </div>
+        </div>
+        <figcaption class="study-caption">
+          <span class="study-fig-number" data-figure-no>Fig. 01</span><span
+            class="study-caption-rule"
+            aria-hidden="true"></span><span data-figure-label
+            >{chapters[0].figure}</span
+          >
+        </figcaption>
+      </figure>
+    </div>
+    <div class="study-footer wrap">
+      <a class="study-next" href="#medicine"
+        ><span aria-hidden="true">↓</span><span data-next-label
+          >Scroll to explore</span
+        ></a
+      >
+      <nav class="study-nav" aria-label="Study chapters">
+        {
+          chapters.map((chapter, i) => (
+            <a href={`#${chapter.id}`}>
+              <span class="study-step-number" aria-hidden="true">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              {chapter.label}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { startStudy } from "../lib/stethoscope/sequence";
+  const study = document.querySelector<HTMLElement>("[data-study]");
+  if (study) startStudy(study);
+</script>

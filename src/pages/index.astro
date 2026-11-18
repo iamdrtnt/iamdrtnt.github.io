@@ -1,6 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
-import CorticalSequence from "../components/CorticalSequence.astro";
+import StethoscopeSequence from "../components/StethoscopeSequence.astro";
 import Icon from "../components/Icon.astro";
 import ArticleCard from "../components/ArticleCard.astro";
 import { profile, projects, publications } from "../data/profile";
@@ -31,8 +31,8 @@ const directions = [
   description="Explore Mohammadreza Norouzi’s medical education, research interests, scientific writing, and professional background in Vancouver, British Columbia."
   type="ProfilePage"
 >
-  <CorticalSequence />
-  <section class="trajectory">
+  <StethoscopeSequence />
+  <section class="trajectory" id="portfolio" tabindex="-1">
     <div class="wrap trajectory-grid">
       <div>
         <p class="overline">

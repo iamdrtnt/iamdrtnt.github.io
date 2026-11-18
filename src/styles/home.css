@@ -1,57 +1,7 @@
-.opening,
 .trajectory,
 .closing {
   background: var(--black);
   color: var(--ivory);
-}
-.sequence {
-  --scene-height: max(570px, calc(100vh - 74px));
-  --scene-height: max(570px, calc(100svh - 74px));
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.06fr);
-  position: relative;
-}
-.scene-copy {
-  min-height: var(--scene-height);
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-.intro {
-  grid-area: 1/1;
-  z-index: 1;
-}
-.anatomy {
-  grid-area: 2/1;
-}
-.scene-text {
-  width: 100%;
-  padding-block: 70px;
-}
-.intro h1 {
-  font-size: clamp(3.1rem, 5.55vw, 6.1rem);
-  text-transform: uppercase;
-  line-height: 0.94;
-  letter-spacing: -0.056em;
-  margin: 34px 0 25px;
-  font-weight: 350;
-}
-.intro h1 em {
-  display: block;
-  font-size: 1.5em;
-  font-weight: 330;
-  letter-spacing: -0.065em;
-}
-.identity-line {
-  color: #cbccd0;
-  max-width: 490px;
-  font-size: clamp(0.87rem, 1.05vw, 1.04rem);
-  line-height: 1.8;
-}
-.identity-line i {
-  font-style: normal;
-  color: var(--blue);
-  margin-inline: 4px;
 }
 .hero-actions {
   display: flex;
@@ -73,193 +23,9 @@
 .quiet-link:hover {
   text-decoration: underline;
 }
-.scroll-cue {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  position: absolute;
-  bottom: 28px;
-  left: 0;
-  min-height: 42px;
-  color: var(--silver);
-  text-decoration: none;
-  font: 0.65rem/1.4 var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-}
-.scroll-cue span {
-  display: inline-grid;
-  place-items: center;
-  width: 31px;
-  height: 31px;
-  border: 1px solid #55575c;
-  border-radius: 50%;
-  color: var(--ivory);
-  font: 1rem/1 var(--sans);
-}
-.figure-stage {
-  display: contents;
-}
-.plate {
-  grid-area: 1/2;
-  min-width: 0;
-  position: relative;
-  display: grid;
-  align-content: center;
-}
-.plate.section-plate {
-  grid-area: 2/2;
-}
-.instrument {
-  width: 100%;
-  max-width: min(76vh, 100%);
-  max-width: min(76svh, 100%);
-  margin-inline: auto;
-  aspect-ratio: 600/550;
-  position: relative;
-}
-.graticule {
-  color: #51545d;
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-.specimen {
-  position: absolute;
-  width: 93%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  aspect-ratio: 5/4;
-}
-.specimen img,
-.laminae,
-.laminae i {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-.laminae i {
-  position: absolute;
-  inset: 0;
-}
-.laminae img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.laminae i:first-child img {
-  object-position: center top;
-}
-.laminae i:last-child img {
-  object-position: center bottom;
-}
-.laminae i:nth-child(1) {
-  transform: translate(-8%, -8%);
-}
-.laminae i:nth-child(3) {
-  transform: translate(8%, 8%);
-}
-.plate-callout {
-  position: absolute;
-  top: 6%;
-  right: 0;
-  font: 500 clamp(0.55rem, 0.7vw, 0.66rem)/1.3 var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: #c7c9ce;
-}
-.plate-callout::before {
-  content: "";
-  position: absolute;
-  top: calc(100% + 7px);
-  right: 0;
-  width: 100%;
-  height: 16px;
-  transform: skewX(-37deg);
-  transform-origin: top right;
-  border-top: 1px solid #626773;
-  border-left: 1px solid #626773;
-}
-.plate figcaption {
-  position: absolute;
-  bottom: 37px;
-  left: 9%;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border-top: 1px solid #393b42;
-  padding-top: 13px;
-  font: 0.61rem/1.3 var(--mono);
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-  color: var(--silver);
-}
-.plate figcaption b {
-  color: var(--blue);
-  font-weight: 500;
-}
-.anatomy h2 {
-  font-size: clamp(3.8rem, 6.6vw, 7.6rem);
-  margin: 26px 0 18px;
-}
-.anatomy h2 em,
 .display em {
   display: block;
   font-weight: 370;
-}
-.scene-description {
-  color: var(--silver);
-  max-width: 35ch;
-  font-size: clamp(1rem, 1.28vw, 1.22rem);
-  line-height: 1.65;
-}
-.figure-source {
-  margin-top: 30px;
-  color: var(--silver);
-  font-size: 0.6rem;
-}
-.figure-source span {
-  margin-inline: 3px;
-  color: var(--blue);
-}
-@media (min-width: 760px) and (min-height: 550px) and (prefers-reduced-motion: no-preference) {
-  .scrub .figure-stage {
-    overflow: clip;
-    grid-area: 1/2/3/3;
-    display: grid;
-    align-self: start;
-    position: sticky;
-    top: 0;
-    height: var(--scene-height);
-    pointer-events: none;
-  }
-  .scrub .plate {
-    grid-area: 1/1;
-    opacity: calc(1 - var(--exposure, 0));
-  }
-  .scrub .section-plate {
-    opacity: var(--exposure, 0);
-  }
-  .scrub .specimen {
-    transform: translate(-50%, -50%) perspective(900px)
-      rotateY(var(--turn, 0deg)) rotate(var(--tilt, 0deg));
-  }
-  .scrub .laminae i:first-child {
-    transform: translate(
-      calc(-1 * var(--separate, 0%)),
-      calc(-1 * var(--separate, 0%))
-    );
-  }
-  .scrub .laminae i:last-child {
-    transform: translate(var(--separate, 0%), var(--separate, 0%));
-  }
-  .scrub .intro .scene-text {
-    transform: translateY(var(--lift, 0px));
-  }
 }
 .trajectory {
   background: #191a1c;
@@ -476,81 +242,6 @@
 .closing .display {
   font-size: clamp(3.6rem, 7.5vw, 8.7rem);
 }
-@media (max-width: 759px), (max-width: 1050px) and (orientation: portrait) {
-  .sequence {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    padding-top: clamp(38px, 6.5svh, 72px);
-  }
-  .intro {
-    display: contents;
-  }
-  .intro .scene-text {
-    grid-area: 1/1;
-  }
-  .scene-text {
-    padding: 0;
-  }
-  .intro h1 {
-    font-size: clamp(2.3rem, 9.4vw, 4.45rem);
-    margin: 24px 0 13px;
-  }
-  .intro h1 em {
-    font-size: 1.45em;
-  }
-  .identity-line {
-    font-size: clamp(0.78rem, 2.7vw, 0.98rem);
-  }
-  .identity-line i {
-    margin-inline: 1px;
-  }
-  .hero-actions {
-    margin-top: 19px;
-  }
-  .plate {
-    grid-area: 2/1;
-    margin-top: 12px;
-  }
-  .instrument {
-    max-width: min(100%, 52svh);
-  }
-  .plate figcaption {
-    position: static;
-    margin-top: 3px;
-    padding-top: 10px;
-    font-size: 0.6rem;
-  }
-  .scroll-cue {
-    grid-area: 3/1;
-    position: static;
-    width: fit-content;
-    margin: 15px 0 22px;
-  }
-  .scroll-cue span {
-    width: 25px;
-    height: 25px;
-  }
-  .anatomy {
-    grid-area: 4/1;
-    min-height: auto;
-    padding: 46px 0 0;
-    border-top: 1px solid var(--dark-line);
-  }
-  .anatomy h2 {
-    font-size: clamp(3.3rem, 10vw, 5rem);
-    margin: 18px 0 12px;
-  }
-  .anatomy h2 em {
-    display: inline;
-  }
-  .figure-source {
-    margin-top: 18px;
-  }
-  .plate.section-plate {
-    grid-area: 5/1;
-    margin: 22px 0 45px;
-  }
-}
 @media (max-width: 759px) {
   .trajectory-grid,
   .bio-spread,
@@ -597,31 +288,6 @@
     gap: 20px;
   }
 }
-@media (max-width: 370px) {
-  .identity-line {
-    max-width: 29ch;
-  }
-}
-@media (min-width: 760px) and (max-width: 1050px) and (orientation: portrait) {
-  .sequence {
-    padding-top: 5svh;
-  }
-  .intro h1 {
-    font-size: clamp(4.6rem, 9vw, 6rem);
-  }
-  .intro h1 em {
-    font-size: 1.22em;
-  }
-  .intro .scene-text {
-    padding-inline: 3%;
-  }
-  .plate {
-    margin-top: 0;
-  }
-  .instrument {
-    max-width: min(80%, 48svh);
-  }
-}
 @media (min-width: 760px) and (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
     .directions a,
@@ -644,7 +310,6 @@
   }
 }
 @media print {
-  .sequence,
   .trajectory-grid,
   .bio-spread,
   .research-spread,
@@ -652,22 +317,13 @@
   .journal-spread {
     display: block;
   }
-  .opening,
   .closing,
   .trajectory {
     color: black;
     background: white;
   }
-  .scene-copy {
-    min-height: 0;
-  }
-  .scene-text,
   .home-section,
   .trajectory-grid {
     padding-block: 15px;
-  }
-  .figure-stage,
-  .scroll-cue {
-    display: none;
   }
 }

@@ -328,8 +328,7 @@ footer {
 .eyebrow,
 .dark-kicker,
 .overline,
-.chapter-line,
-.figure-source {
+.chapter-line {
   font: 500 0.69rem/1.55 var(--mono);
   text-transform: uppercase;
   letter-spacing: 0.12em;

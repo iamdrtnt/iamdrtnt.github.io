@@ -4,6 +4,7 @@ import { readdirSync, readFileSync, existsSync, statSync } from "node:fs";
 import path from "node:path";
 import { load } from "cheerio";
 import config from "../astro.config.mjs";
+import { createStethoscope } from "../src/lib/stethoscope/model.ts";
 
 const root = path.resolve("dist");
 const origin = new URL(config.site).origin;
@@ -99,6 +100,86 @@ test("local links, fragments, scripts, styles, images and share cards resolve", 
       }
     }
   }
+});
+test("the homepage delivers the study chapters and instrument poster in static HTML", () => {
+  const { $ } = documents.find(({ pathname }) => pathname === "/");
+  const study = $("main [data-study]");
+  const chapters = study.find("[data-chapter]");
+  const text = (element) => $(element).text().replace(/\s+/g, " ").trim();
+
+  assert.equal(study.length, 1);
+  assert.equal(study.find("canvas").length, 1);
+  const poster = study.find("img.study-poster");
+  assert.equal(poster.length, 1);
+  assert.ok(poster.attr("src")?.startsWith("/images/"));
+  assert.match(poster.attr("alt"), /stethoscope/i);
+  assert.equal(chapters.length, 5);
+
+  assert.match(text(chapters.eq(0).find("h1")), /Mohammadreza\s+Norouzi/);
+  for (const [i, [pillar, subtitle]] of [
+    ["Medicine", "Grounded in Clinical Practice."],
+    ["Research", "Driven by Scientific Inquiry."],
+    ["Innovation", "Shaped by Strategic Thinking."],
+  ].entries()) {
+    const copy = text(chapters.eq(i + 1)).toLowerCase();
+    assert.ok(copy.includes(pillar.toLowerCase()), pillar);
+    assert.ok(copy.includes(subtitle.toLowerCase()), subtitle);
+  }
+
+  chapters.each((_, chapter) => {
+    const heading = $(chapter).find("h1,h2").first();
+    assert.ok(text(heading));
+    assert.equal(
+      heading.closest('[hidden],[inert],[aria-hidden="true"]').length,
+      0,
+    );
+  });
+  const chapterLinks = study.find('nav[aria-label="Study chapters"] a');
+  assert.deepEqual(
+    chapterLinks.map((_, link) => $(link).attr("href")).get(),
+    chapters.map((_, chapter) => "#" + $(chapter).attr("id")).get(),
+  );
+  const portfolio = $("#portfolio");
+  assert.equal(portfolio.length, 1);
+  assert.equal(portfolio.closest("[data-study]").length, 0);
+  assert.ok(study.find('a[href="#portfolio"]').length, "Native link past the study");
+  for (const href of ["/research/#publications", "/blog/"]) {
+    assert.ok($(`main a[href="${href}"]`).length, href);
+  }
+});
+test("the instrument retraces its component poses using the same meshes and geometry", (t) => {
+  const instrument = createStethoscope();
+  t.after(() => instrument.dispose());
+
+  function pose(medicine, research, innovation) {
+    instrument.update(medicine, research, innovation);
+    instrument.root.updateMatrixWorld(true);
+    return [instrument.chest, ...instrument.earTips].map((part) =>
+      part.matrixWorld.toArray(),
+    );
+  }
+
+  function meshIdentities() {
+    const meshes = [];
+    instrument.root.traverse((part) => {
+      if (part.isMesh) meshes.push([part.uuid, part.geometry.uuid]);
+    });
+    return meshes;
+  }
+
+  const assembled = pose(0, 0, 0);
+  const identities = meshIdentities();
+  assert.ok(identities.length > 0);
+  const intermediate = pose(0.37, 0.56, 0.22);
+  const [chest, leftEar, rightEar] = pose(1, 1, 1);
+  assert.notDeepEqual(chest, assembled[0], "Chestpiece separates");
+  assert.notDeepEqual(leftEar, assembled[1], "Left earpiece moves");
+  assert.notDeepEqual(rightEar, assembled[2], "Right earpiece moves");
+  assert.deepEqual(meshIdentities(), identities);
+
+  assert.deepEqual(pose(0.37, 0.56, 0.22), intermediate);
+  assert.deepEqual(pose(0, 0, 0), assembled);
+  assert.deepEqual(meshIdentities(), identities);
 });
 test("the sitemap, robots, and RSS match the indexable pages and published articles", () => {
   const sitemap = load(readFileSync(path.join(root, "sitemap.xml"), "utf8"), {

@@ -19,7 +19,7 @@ npm test
 npm run preview
 ```
 
-Astro builds the site into `dist/`. The output is static HTML, CSS, optimized images, self-hosted fonts, and small interaction scripts. There is no database or runtime server. The theme switch follows the operating system until a visitor makes a choice. The mobile navigation and blog remain accessible without JavaScript.
+Astro builds the site into `dist/`. GitHub Pages serves the HTML, CSS, images, fonts and JavaScript directly. The theme switch follows the operating system until a visitor makes a choice. The mobile navigation and blog remain accessible without JavaScript.
 
 ## Project map
 
@@ -27,17 +27,24 @@ Astro builds the site into `dist/`. The output is static HTML, CSS, optimized im
 | --- | --- |
 | `src/pages/` | Seven main pages, article routes, error page, sitemap, RSS, and robots rules |
 | `src/layouts/Base.astro` | Shared header, navigation, footer, theme controls, social metadata, and JSON-LD |
-| `src/components/` | Cortical illustration plate, timelines, page headings, article cards, and publication records |
+| `src/components/` | Homepage stethoscope study, timelines, page headings, article cards, and publication records |
 | `src/data/profile.ts` | Approved biography, degrees, experience, interests, skills, contact links, CV path, publication and project records |
 | `src/content/blog/` | English Markdown articles |
 | `src/content.config.ts` and `src/data/categories.ts` | Validated article schema and supported categories |
 | `src/lib/articles.ts` | Shared article selection, dates, reading time, and routes |
+| `src/lib/stethoscope/` | Procedural instrument geometry, studio lighting, camera motion, and scroll control |
 | `src/styles/site.css` | Responsive layout, colour themes, local fonts, reduced motion, and print rules |
 | `public/images/` and `public/licenses/` | Public visual assets and third-party notices |
 | `templates/article.md` | Draft template kept outside the public collection |
 | `scripts/site.test.mjs` | Tests against the actual production output |
 | `.github/workflows/pages.yml` | PR build checks and approved-main deployment |
 | `astro.config.mjs` | Production origin and root base path |
+
+## Homepage stethoscope study
+
+The opening follows one instrument from its assembled form to the chestpiece, along the tubing and up to the binaural arms. Three.js constructs the parts locally. GSAP ScrollTrigger maps native scroll position to the camera and component poses, so scrolling back retraces the study.
+
+The five chapters are written in HTML in `src/components/StethoscopeSequence.astro`. With JavaScript disabled, reduced motion enabled or WebGL unavailable, readers can follow the text alongside a static rendering of the instrument. The research portfolio and journal follow the study in normal document order.
 
 ## Review and publish
 
@@ -87,10 +94,10 @@ When a custom domain is supplied, verify domain ownership in GitHub, follow GitH
 
 ## Verification
 
-Run `npm ci && npm run build && npm test`. The tests inspect every generated HTML document, its internal links and fragments, assets, page titles and descriptions, structured data, language settings, sitemap membership, and feed entries. Check English wording manually as well. For visual changes, inspect narrow and wide screens, light and dark themes, keyboard focus, the mobile menu, reduced motion, and blog filtering. Live search indexing and real-user Core Web Vitals can only be measured after publication.
+Run `npm ci && npm run build && npm test`. The tests inspect every generated HTML document, its internal links and fragments, assets, page titles and descriptions, structured data, language settings, sitemap membership, and feed entries. They also check that the homepage delivers its poster and chapter text in HTML and that the procedural instrument returns to its earlier poses with the same geometry. For visual changes, inspect narrow and wide screens, both themes, keyboard focus, reduced motion, and the mobile menu. Scroll forward and back through the study and follow its links into the portfolio. Check English wording and blog filtering manually as well.
 
 ## Visual credits
 
-The homepage plates and social image use original renderings of the left cerebral hemisphere from the FreeSurfer fsaverage5 reference surface distributed by Nilearn. This is an anatomical template. The first homepage plate follows the folded pial surface with silver contours. The second shows three separated portions of the same reference mesh. Both are exported as WebP so the scroll sequence works without a 3D runtime. The illustrations contain no patient or owner imaging. [Source surface](https://github.com/nilearn/nilearn/blob/8a558ba11867c5f1ae91f3abe4ca5a831d419e7e/nilearn/datasets/data/fsaverage5/pial_left.gii.gz) · [Nilearn dataset description](https://nilearn.github.io/stable/modules/generated/nilearn.datasets.fetch_surf_fsaverage.html)
+The procedural stethoscope and its poster are original to this site. The social image uses a rendering of the left cerebral hemisphere from the FreeSurfer fsaverage5 anatomical reference surface distributed by Nilearn. [Source surface](https://github.com/nilearn/nilearn/blob/8a558ba11867c5f1ae91f3abe4ca5a831d419e7e/nilearn/datasets/data/fsaverage5/pial_left.gii.gz) · [Nilearn dataset description](https://nilearn.github.io/stable/modules/generated/nilearn.datasets.fetch_surf_fsaverage.html)
 
 Newsreader and DM Sans are bundled from Fontsource and served locally under their SIL Open Font Licenses. Font, Nilearn, and FreeSurfer notices are in `public/licenses/`.
