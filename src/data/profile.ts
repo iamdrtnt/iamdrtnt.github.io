@@ -5,7 +5,7 @@ export const profile = {
   introduction: "My perspective on medicine extends beyond individual patient care. I am driven by a commitment to improving healthcare systems through research, strategic thinking, and innovation, with the goal of making better care accessible to more people worldwide.",
   bio: "My journey into medicine began with a simple curiosity: understanding the human body, how it works, and how science can help improve human health.",
   summary: "International medical graduate with experience in general medical practice, primary healthcare, and clinical decision-making. My professional interests bring together clinical medicine, evidence-based research, healthcare management, and innovation, with a particular focus on improving access to healthcare.",
-  disclosure: "Iranian MD graduate. Not licensed to practise medicine in British Columbia, Canada.",
+  disclosure: "Iranian MD graduate.",
   education: [
     {
       title: "Doctor of Medicine (MD)",
