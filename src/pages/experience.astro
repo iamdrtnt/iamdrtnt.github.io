@@ -1,0 +1,34 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHead from "../components/PageHead.astro";
+import Timeline from "../components/Timeline.astro";
+import { profile } from "../data/profile";
+---
+
+<Base
+  title="Education and Experience | Mohammadreza Norouzi"
+  description="Explore Mohammadreza Norouzi’s MD education, Executive Healthcare MBA certificate, general medical practice in Iran, and scientific writing experience."
+  label="Education and experience"
+>
+  <PageHead
+    title="Education & experience"
+    description="Medical training, healthcare management education, and experience in clinical practice and research."
+  />
+  <div class="wrap section dossier">
+    <section>
+      <h2>Education</h2>
+      <Timeline
+        items={profile.education.map((e) => ({
+          title: e.title,
+          detail: e.institution,
+          label: e.place,
+        }))}
+      />
+    </section>
+    <section>
+      <h2>Professional experience</h2>
+      <Timeline items={profile.experience} />
+    </section>
+    <p class="note">{profile.disclosure}</p>
+  </div>
+</Base>

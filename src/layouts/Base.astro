@@ -1,0 +1,238 @@
+---
+import "../styles/site.css";
+import { profile, navigation } from "../data/profile";
+import Icon from "../components/Icon.astro";
+interface Props {
+  title: string;
+  description: string;
+  label?: string;
+  type?: string;
+  extraSchema?: Record<string, unknown>;
+  noindex?: boolean;
+  date?: Date;
+  image?: string;
+}
+const {
+  title,
+  description,
+  label,
+  type = "WebPage",
+  extraSchema = {},
+  noindex = false,
+  date,
+  image = "/images/social-card.png",
+} = Astro.props;
+const base = Astro.site!;
+const absolute = (path: string) => new URL(path, base).href;
+const path = Astro.url.pathname;
+const url = absolute(path);
+const home = path === "/";
+const person = {
+  "@type": "Person",
+  "@id": absolute("/#person"),
+  name: profile.name,
+  url: absolute("/about/"),
+  sameAs: profile.profiles.map((p) => p.url),
+  homeLocation: { "@type": "Place", name: profile.location },
+};
+const website = {
+  "@type": "WebSite",
+  "@id": absolute("/#website"),
+  url: base.href,
+  name: profile.name,
+  inLanguage: "en-CA",
+};
+const crumbs = [
+  { name: "Home", item: base.href },
+  ...(type === "BlogPosting"
+    ? [{ name: "Blog", item: absolute("/blog/") }]
+    : []),
+  { name: label || title, item: url },
+];
+const graph = [
+  person,
+  website,
+  {
+    "@type": type,
+    "@id": url + "#page",
+    url,
+    name: title,
+    description,
+    inLanguage: "en-CA",
+    isPartOf: { "@id": website["@id"] },
+    ...(type === "ProfilePage" ? { mainEntity: { "@id": person["@id"] } } : {}),
+    ...extraSchema,
+  },
+  ...(!home
+    ? [
+        {
+          "@type": "BreadcrumbList",
+          itemListElement: crumbs.map((v, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            ...v,
+          })),
+        },
+      ]
+    : []),
+];
+---
+
+<!doctype html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={url} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <meta
+      property="og:type"
+      content={type === "BlogPosting" ? "article" : "website"}
+    />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={url} />
+    <meta property="og:locale" content="en_CA" />
+    <meta property="og:site_name" content={profile.name} />
+    <meta property="og:image" content={absolute(image)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={absolute(image)} />
+    {date && (
+      <meta property="article:published_time" content={date.toISOString()} />
+    )}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Mohammadreza Norouzi’s blog"
+      href="/rss.xml"
+    />
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": graph,
+      }).replace(/</g, "\\u003c")}
+    />
+    <script is:inline>
+      try {
+        const theme = localStorage.getItem("theme");
+        if (theme === "dark" || theme === "light")
+          document.documentElement.dataset.theme = theme;
+      } catch {}
+      document.documentElement.classList.add("js");
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">
+      Skip to content
+    </a>
+    <header class="mast">
+      <div class="wrap bar">
+        <a class="brand" href="/" aria-label="Mohammadreza Norouzi, home">
+          <span class="monogram">
+            mn<span>.</span>
+          </span>
+          <span class="brand-name">Mohammadreza Norouzi</span>
+        </a>
+        <nav id="navigation" aria-label="Main navigation">
+          {navigation.map(([text, href]) => (
+            <a
+              href={href}
+              aria-current={path === href ? "page" : undefined}
+              class:list={[path.startsWith(href) && href !== "/" && "ancestor"]}
+            >
+              {text}
+            </a>
+          ))}
+        </nav>
+        <div class="controls">
+          <button
+            class="iconbtn theme"
+            aria-label="Dark theme"
+            aria-pressed="false"
+            title="Toggle dark theme"
+          >
+            <span class="day">
+              <Icon name="moon" />
+            </span>
+            <span class="night">
+              <Icon name="sun" />
+            </span>
+          </button>
+          <button
+            class="iconbtn menu"
+            aria-expanded="false"
+            aria-controls="navigation"
+            aria-label="Navigation menu"
+          >
+            <Icon name="menu" />
+          </button>
+        </div>
+      </div>
+    </header>
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <footer>
+      <div class="wrap footer-row">
+        <div>
+          <a class="foot-name" href="/">
+            {profile.name}
+          </a>
+          <p>Vancouver, British Columbia, Canada</p>
+        </div>
+        <div class="footer-links">
+          <a href="/cv/">Curriculum vitae</a>
+          <a href="/contact/">Contact</a>
+          <a href="/rss.xml">RSS feed</a>
+        </div>
+      </div>
+    </footer>
+    <script>
+      const root = document.documentElement;
+      const toggle = document.querySelector<HTMLButtonElement>(".theme")!;
+      const pref = matchMedia("(prefers-color-scheme: dark)");
+      const current = () =>
+        root.dataset.theme || (pref.matches ? "dark" : "light");
+      function sync() {
+        toggle.setAttribute("aria-pressed", String(current() === "dark"));
+      }
+      sync();
+      pref.addEventListener("change", sync);
+      toggle.addEventListener("click", () => {
+        root.dataset.theme = current() === "dark" ? "light" : "dark";
+        try {
+          localStorage.setItem("theme", root.dataset.theme);
+        } catch {}
+        sync();
+      });
+      const menu = document.querySelector<HTMLButtonElement>(".menu")!;
+      const nav = document.querySelector<HTMLElement>("#navigation")!;
+      function open(value: boolean) {
+        menu.setAttribute("aria-expanded", String(value));
+        nav.classList.toggle("open", value);
+      }
+      menu.addEventListener("click", () =>
+        open(menu.getAttribute("aria-expanded") !== "true"),
+      );
+      document.addEventListener("keydown", (e) => {
+        if (
+          e.key === "Escape" &&
+          menu.getAttribute("aria-expanded") === "true"
+        ) {
+          open(false);
+          menu.focus();
+        }
+      });
+      document.addEventListener("click", (e) => {
+        if (e.target instanceof Element && !e.target.closest(".mast"))
+          open(false);
+      });
+    </script>
+  </body>
+</html>

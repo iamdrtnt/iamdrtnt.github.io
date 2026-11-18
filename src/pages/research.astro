@@ -1,0 +1,119 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHead from "../components/PageHead.astro";
+import PublicationCard from "../components/Publication.astro";
+import Icon from "../components/Icon.astro";
+import {
+  profile,
+  publications,
+  projects,
+  presentations,
+} from "../data/profile";
+const academic = profile.profiles.filter((p) =>
+  ["ORCID", "Google Scholar", "ResearchGate", "PubMed"].includes(p.label),
+);
+---
+
+<Base
+  title="Research and Publications | Mohammadreza Norouzi"
+  description="Browse Mohammadreza Norouzi’s research interests in clinical medicine, neuroscience, artificial intelligence, epidemiology, and health services."
+  label="Research"
+>
+  <PageHead
+    title="Research & publications"
+    description="Research interests, scientific activities, and a record of scholarly work."
+  />
+  <div class="wrap section">
+    <h2>Research interests</h2>
+    <div class="card-grid spaced">
+      {profile.research.map((r) => (
+        <section
+          class="interest-card"
+          id={r.title.toLowerCase().replaceAll(" ", "-")}
+        >
+          <span class="iconblock">
+            <Icon name={r.icon} size={24} />
+          </span>
+          <h3>{r.title}</h3>
+          <p>{r.description}</p>
+        </section>
+      ))}
+    </div>
+  </div>
+  <div class="tint">
+    <div class="wrap section dossier">
+      <section id="publications">
+        <h2>Publications</h2>
+        <div>
+          {publications.length ? (
+            publications.map((record) => <PublicationCard record={record} />)
+          ) : (
+            <div class="empty">
+              <Icon name="book" />
+              <h3>Publications coming soon</h3>
+              <p>
+                Verified citations and links will appear here as they become
+                available.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+      <section>
+        <h2>Research projects</h2>
+        <div>
+          {projects.length ? (
+            projects.map((p) => (
+              <article>
+                <h3>{p.title}</h3>
+                <p>{p.description}</p>
+                {p.url && <a href={p.url}>Project details</a>}
+              </article>
+            ))
+          ) : (
+            <p>
+              Project descriptions will be added when details are available for
+              public sharing.
+            </p>
+          )}
+        </div>
+      </section>
+      <section>
+        <h2>Conference presentations</h2>
+        <div>
+          {presentations.length ? (
+            presentations.map((p) => (
+              <p>
+                <strong>{p.title}</strong> · {p.meeting}, {p.year}
+              </p>
+            ))
+          ) : (
+            <p>No verified conference records are listed.</p>
+          )}
+        </div>
+      </section>
+      <section>
+        <h2>Scientific activities</h2>
+        <p>
+          My experience includes medical research activities and scientific
+          writing. My <a href="/blog/">blog</a> explores the methods and
+          questions behind these interests.
+        </p>
+      </section>
+      <section>
+        <h2>Academic profiles</h2>
+        <div>
+          {academic.length ? (
+            academic.map((p) => (
+              <p>
+                <a href={p.url}>{p.label}</a>
+              </p>
+            ))
+          ) : (
+            <p>Academic profile links will be added once verified.</p>
+          )}
+        </div>
+      </section>
+    </div>
+  </div>
+</Base>

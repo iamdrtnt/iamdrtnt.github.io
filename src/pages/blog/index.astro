@@ -1,0 +1,101 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHead from "../../components/PageHead.astro";
+import ArticleCard from "../../components/ArticleCard.astro";
+import Icon from "../../components/Icon.astro";
+import {
+  articles,
+  articleUrl,
+  dateLabel,
+  readingTime,
+} from "../../lib/articles";
+import { categories } from "../../data/categories";
+const posts = await articles();
+const featured = posts.find((p) => p.data.featured) || posts[0];
+---
+
+<Base
+  title="Scientific and Professional Blog | Mohammadreza Norouzi"
+  description="Read articles on clinical research, evidence-based medicine, neuroscience, and the evaluation of healthcare technology."
+  type="Blog"
+  label="Blog"
+>
+  <PageHead
+    title="Research notebook"
+    parent="Scientific blog"
+    description="Essays on reading research, asking clinical questions, and evaluating emerging technologies."
+  />
+  <div class="wrap section">
+    {featured && (
+      <article class="featured">
+        <div class="featured-copy">
+          <p class="eyebrow">
+            <span></span>Featured article
+          </p>
+          <p class="dark-kicker">{featured.data.category}</p>
+          <h2>
+            <a href={articleUrl(featured.id)}>{featured.data.title}</a>
+          </h2>
+          <p>{featured.data.description}</p>
+          <div class="feature-foot">
+            <a class="textlink" href={articleUrl(featured.id)}>
+              Read article <Icon name="arrow" size={16} />
+            </a>
+            <span>
+              {dateLabel(featured.data.date)} · {readingTime(featured)} min read
+            </span>
+          </div>
+        </div>
+        <div class="feature-art" aria-hidden="true">
+          <Icon name="book" size={86} />
+        </div>
+      </article>
+    )}
+    <div class="section-heading">
+      <h2>All articles</h2>
+      <a class="textlink" href="/rss.xml">
+        RSS feed <Icon name="diagonal" size={16} />
+      </a>
+    </div>
+    <div class="filters" role="group" aria-label="Filter articles by category">
+      <button data-filter="All" aria-pressed="true">
+        All topics
+      </button>
+      {categories
+        .filter((c) => posts.some((p) => p.data.category === c))
+        .map((c) => (
+          <button data-filter={c} aria-pressed="false">
+            {c}
+          </button>
+        ))}
+    </div>
+    <p class="sr-only" aria-live="polite" id="filter-status"></p>
+    <div class="card-grid">
+      {posts.map((post) => (
+        <ArticleCard post={post} />
+      ))}
+    </div>
+    {!posts.length && <p>Articles will appear here as they are published.</p>}
+  </div>
+  <script>
+    const buttons =
+      document.querySelectorAll<HTMLButtonElement>("[data-filter]");
+    const cards = document.querySelectorAll<HTMLElement>("[data-category]");
+    buttons.forEach((b) =>
+      b.addEventListener("click", () => {
+        buttons.forEach((item) =>
+          item.setAttribute("aria-pressed", String(item === b)),
+        );
+        let count = 0;
+        cards.forEach((c) => {
+          c.hidden =
+            b.dataset.filter !== "All" &&
+            c.dataset.category !== b.dataset.filter;
+          if (!c.hidden) count++;
+        });
+        document.querySelector("#filter-status")!.textContent =
+          count + " " + (count === 1 ? "article" : "articles") + " shown.";
+      }),
+    );
+  </script>
+</Base>

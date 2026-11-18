@@ -1,0 +1,45 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHead from "../components/PageHead.astro";
+import Icon from "../components/Icon.astro";
+import { profile } from "../data/profile";
+---
+
+<Base
+  title="Contact and Professional Profiles | Mohammadreza Norouzi"
+  description="Find verified public profiles and professional contact information for Mohammadreza Norouzi, a medical graduate based in Vancouver, Canada."
+  label="Contact"
+>
+  <PageHead
+    title="Contact"
+    description="Professional contact information for academic enquiries, scientific writing, and research collaboration."
+  />
+  <div class="wrap section editorial">
+    <aside class="aside-card">
+      <Icon name="pin" size={26} />
+      <h2>Location</h2>
+      <p>{profile.location}</p>
+    </aside>
+    <div class="prose">
+      <h2>Professional profiles</h2>
+      <div class="profile-list">
+        {profile.profiles.map((p) => (
+          <a href={p.url} rel="me">
+            <span>{p.label}</span>
+            <Icon name="diagonal" size={19} />
+          </a>
+        ))}
+      </div>
+      <h2>Email enquiries</h2>
+      {profile.email ? (
+        <a href={"mailto:" + profile.email}>{profile.email}</a>
+      ) : (
+        <p>A public email address has not been provided.</p>
+      )}
+      <p class="note">
+        For an overview of my training and research interests, see my{" "}
+        <a href="/cv/">curriculum vitae</a>.
+      </p>
+    </div>
+  </div>
+</Base>

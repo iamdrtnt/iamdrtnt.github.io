@@ -1,0 +1,33 @@
+---
+import { profile } from "../data/profile";
+---
+
+<figure class="plate">
+  {profile.portrait ? (
+    <img class="portrait" {...profile.portrait} />
+  ) : (
+    <>
+      <div class="plot">
+        <div class="orbit"></div>
+        <div class="cross tl"></div>
+        <div class="cross br"></div>
+        <img
+          src="/images/cortical-surface.webp"
+          width="1060"
+          height="824"
+          fetchpriority="high"
+          alt="Triangular surface mesh of the left cerebral hemisphere, viewed from the side."
+        />
+        <span class="hemisphere" aria-hidden="true">
+          LH
+        </span>
+      </div>
+      <figcaption>
+        <span>
+          <b>Fig. 01</b> / Cerebral cortex
+        </span>
+        <span>Lateral view</span>
+      </figcaption>
+    </>
+  )}
+</figure>

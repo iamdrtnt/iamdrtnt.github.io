@@ -1,0 +1,23 @@
+---
+import type { Publication } from "../data/profile";
+interface Props {
+  record: Publication;
+}
+const { record: p } = Astro.props;
+---
+
+<article class="record">
+  <p class="kicker">
+    {p.type} · {p.year}
+  </p>
+  <h3>{p.title}</h3>
+  <p>
+    {p.authors.join(", ")}. <em>{p.journal}</em>.
+  </p>
+  {p.abstract && <p>{p.abstract}</p>}
+  <div class="inline-links">
+    {p.doi && <a href={"https://doi.org/" + p.doi}>DOI {p.doi}</a>}
+    {p.url && <a href={p.url}>Publication record</a>}
+    {p.pubmed && <a href={p.pubmed}>PubMed record</a>}
+  </div>
+</article>
