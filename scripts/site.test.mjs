@@ -117,9 +117,9 @@ test("the homepage delivers the study chapters and instrument poster in static H
 
   assert.match(text(chapters.eq(0).find("h1")), /Mohammadreza\s+Norouzi/);
   for (const [i, [pillar, subtitle]] of [
-    ["Medicine", "Grounded in Clinical Practice."],
-    ["Research", "Driven by Scientific Inquiry."],
-    ["Innovation", "Shaped by Strategic Thinking."],
+    ["Medicine", "Where Knowledge Meets Responsibility."],
+    ["Research", "Driven by Curiosity. Guided by Evidence."],
+    ["Innovation", "Rethinking Healthcare. Expanding Access."],
   ].entries()) {
     const copy = text(chapters.eq(i + 1)).toLowerCase();
     assert.ok(copy.includes(pillar.toLowerCase()), pillar);
