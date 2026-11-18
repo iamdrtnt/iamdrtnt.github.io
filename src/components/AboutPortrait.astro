@@ -11,21 +11,20 @@ const { image } = Astro.props;
 
 <about-portrait>
   <figure class="portrait">
-    <span class="portrait-orbit" aria-hidden="true"></span>
-    <div class="portrait-surface">
-      <Image
-        src={image}
-        alt="Portrait of Mohammadreza Norouzi"
-        format="webp"
-        quality={84}
-        widths={[320, 480, 720, 960, 1120].filter((width) => width <= image.width)}
-        sizes="(width < 760px) min(90vw, 22rem), min(30vw, 26rem)"
-        loading="eager"
-      />
-      <span class="portrait-shade" aria-hidden="true"></span>
-      <span class="portrait-sweep" aria-hidden="true"></span>
-      <span class="portrait-rim" aria-hidden="true"></span>
+    <div class="portrait-light" aria-hidden="true">
+      <span class="portrait-halo"></span>
+      <span class="portrait-sweep"></span>
     </div>
+    <Image
+      class="portrait-subject"
+      src={image}
+      alt="Portrait of Mohammadreza Norouzi"
+      format="webp"
+      quality={84}
+      widths={[320, 480, 720, 960, 1120].filter((width) => width <= image.width)}
+      sizes="(width < 760px) min(90vw, 20rem), min(30vw, 26rem)"
+      loading="eager"
+    />
   </figure>
 </about-portrait>
 
@@ -33,7 +32,7 @@ const { image } = Astro.props;
   about-portrait {
     display: block;
     width: min(100%, 26rem);
-    margin-block-end: clamp(32px, 3.2vw, 48px);
+    margin-block-end: clamp(24px, 2.4vw, 36px);
   }
 
   .portrait {
@@ -41,72 +40,53 @@ const { image } = Astro.props;
     isolation: isolate;
   }
 
-  .portrait-surface {
+  .portrait-subject {
     position: relative;
-    overflow: hidden;
-    border-radius: 3px;
-    background: var(--black);
-  }
-
-  .portrait-surface img {
     width: 100%;
+    filter: drop-shadow(2px -1px 2px light-dark(#7892a84a, #a4c1df47));
   }
 
-  .portrait-orbit,
-  .portrait-shade,
-  .portrait-sweep,
-  .portrait-rim {
+  .portrait-light,
+  .portrait-halo,
+  .portrait-sweep {
     position: absolute;
+    inset: 0;
     pointer-events: none;
   }
 
-  .portrait-orbit {
-    inset: 7% -17px 10%;
-    border: 1px solid transparent;
-    border-block-start-color: color-mix(in srgb, var(--muted) 34%, transparent);
-    border-inline-end-color: color-mix(in srgb, var(--accent) 24%, transparent);
-    border-radius: 50%;
-    transform: rotate(-12deg);
+  .portrait-light {
+    overflow: clip;
+    mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+    background: radial-gradient(
+      ellipse 46% 43% at 47% 51%,
+      light-dark(#474e611f, #080d155c),
+      transparent 100%
+    );
   }
 
-  .portrait-shade,
-  .portrait-sweep,
-  .portrait-rim {
-    inset: 0;
-  }
-
-  .portrait-shade {
-    background: linear-gradient(138deg, #14171d, #080a0d 78%);
-    opacity: 0;
+  .portrait-halo {
+    background: radial-gradient(
+      ellipse 47% 47% at 61% 46%,
+      light-dark(#698cb67a, #5a83b39e),
+      transparent 100%
+    );
+    opacity: 0.72;
   }
 
   .portrait-sweep {
-    background: linear-gradient(
-      113deg,
-      transparent 25%,
-      rgb(174 195 218 / 0.1) 44%,
-      rgb(226 235 244 / 0.19) 52%,
-      transparent 72%
+    background: radial-gradient(
+      ellipse 16% 39% at 73% 44%,
+      light-dark(#f8fbffd9, #c0d6ec96),
+      transparent 100%
     );
-    /* Keep the moving highlight strongest near the photographic edges. */
-    mask-image: linear-gradient(#000, #0005 25%, #0003 59%, #000 100%);
     opacity: 0;
-  }
-
-  .portrait-rim {
-    border-radius: inherit;
-    box-shadow: inset 0 0 0 1px rgb(177 198 222 / 0.46);
-    opacity: 0.42;
+    transform: rotate(19deg);
   }
 
   @media (width < 760px) {
     about-portrait {
-      width: min(100%, 22rem);
+      width: min(100%, 20rem);
       margin-inline: auto;
-    }
-
-    .portrait-orbit {
-      display: none;
     }
   }
 </style>
@@ -158,21 +138,21 @@ const { image } = Astro.props;
               });
               timeline
                 .fromTo(
-                  ".portrait-surface",
-                  { y: 20, opacity: 0.96 },
-                  { y: 0, opacity: 1, duration: 0.42, ease: "sine.out" },
+                  ".portrait-subject",
+                  { y: 14 },
+                  { y: 0, duration: 0.64, ease: "sine.out" },
                   0,
                 )
                 .fromTo(
-                  ".portrait-shade",
-                  { opacity: 0.19 },
-                  { opacity: 0, duration: 0.44 },
+                  ".portrait-halo",
+                  { opacity: 0.18, xPercent: -11, yPercent: 5 },
+                  { opacity: 1, xPercent: 12, yPercent: -3, duration: 0.54 },
                   0,
                 )
                 .fromTo(
                   ".portrait-sweep",
-                  { xPercent: -72 },
-                  { xPercent: 72, duration: 0.82 },
+                  { xPercent: -24, yPercent: 9 },
+                  { xPercent: 17, yPercent: -5, duration: 0.82 },
                   0.18,
                 )
                 .fromTo(
@@ -182,12 +162,11 @@ const { image } = Astro.props;
                   0.18,
                 )
                 .to(".portrait-sweep", { opacity: 0, duration: 0.45 }, 0.55)
-                .to(".portrait-rim", { opacity: 0.82, duration: 0.37 }, 0.18)
-                .to(".portrait-rim", { opacity: 0.42, duration: 0.45 }, 0.55);
-
-              if (conditions.wide) {
-                timeline.from(".portrait-orbit", { rotation: -17, duration: 1 }, 0);
-              }
+                .to(
+                  ".portrait-halo",
+                  { opacity: 0.72, xPercent: 0, yPercent: 0, duration: 0.46 },
+                  0.54,
+                );
             },
           );
         } catch {
