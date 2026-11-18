@@ -13,7 +13,8 @@ import { profile, achievements, publications } from "../data/profile";
 >
   <PageHead
     title="Curriculum vitae"
-    description="Mohammadreza Norouzi · Vancouver, British Columbia, Canada"
+    description={profile.title}
+    parent={profile.location}
   />
   <div class="wrap section dossier">
     <div class="cv-download">
@@ -32,7 +33,7 @@ import { profile, achievements, publications } from "../data/profile";
     <section>
       <h2>Professional summary</h2>
       <div>
-        <p>{profile.bio}</p>
+        <p>{profile.summary}</p>
         <p class="note">{profile.disclosure}</p>
       </div>
     </section>
@@ -40,7 +41,6 @@ import { profile, achievements, publications } from "../data/profile";
       <h2>Education</h2>
       <div>
         {profile.education
-          .filter((e) => e.title.includes("Medicine"))
           .map((e) => (
             <div>
               <h3>{e.title}</h3>
@@ -54,17 +54,17 @@ import { profile, achievements, publications } from "../data/profile";
     <section>
       <h2>Professional experience</h2>
       <div>
-        {profile.experience.slice(0, 2).map((e) => (
+        {profile.experience.map((e) => (
           <div>
             <h3>{e.title}</h3>
-            <p>{e.detail}</p>
+            <p>{e.label}</p>
           </div>
         ))}
       </div>
     </section>
     <section>
-      <h2>Research experience</h2>
-      <p>{profile.experience[2].detail}</p>
+      <h2>Professional areas</h2>
+      <p>Strategic Thinking · Healthcare Management · Problem-Solving · Leadership & Team Coordination · Digital Health · Entrepreneurship</p>
     </section>
     <section>
       <h2>Publications</h2>
@@ -81,20 +81,11 @@ import { profile, achievements, publications } from "../data/profile";
     <section>
       <h2>Certifications</h2>
       <div>
-        {profile.education
-          .filter((e) => e.title.includes("certificate"))
-          .map((e) => (
-            <div>
-              <h3>{e.title}</h3>
-              <p>
-                {e.institution}, {e.place}
-              </p>
-            </div>
-          ))}
+        {profile.training.map((name) => <p>{name}</p>)}
       </div>
     </section>
     <section>
-      <h2>Academic achievements</h2>
+      <h2>Entrepreneurship</h2>
       <div>
         {achievements.length ? (
           <ul>
@@ -108,9 +99,9 @@ import { profile, achievements, publications } from "../data/profile";
       </div>
     </section>
     <section>
-      <h2>Technical skills</h2>
+      <h2>Clinical competencies</h2>
       <div class="tags">
-        {profile.skills.slice(0, 2).map((s) => (
+        {profile.skills.map((s) => (
           <span>{s}</span>
         ))}
       </div>
@@ -118,10 +109,9 @@ import { profile, achievements, publications } from "../data/profile";
     <section>
       <h2>Professional interests</h2>
       <div class="tags">
-        {profile.research.map((r) => (
-          <span>{r.title}</span>
+        {profile.interests.map((r) => (
+          <span>{r}</span>
         ))}
-        <span>Health services research</span>
       </div>
     </section>
   </div>
