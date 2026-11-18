@@ -1,5 +1,7 @@
 ---
 import "../styles/site.css";
+import displayFont from "@fontsource-variable/newsreader/files/newsreader-latin-wght-normal.woff2?url";
+import bodyFont from "@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2?url";
 import { profile, navigation } from "../data/profile";
 import Icon from "../components/Icon.astro";
 interface Props {
@@ -82,6 +84,20 @@ const graph = [
 <html lang="en-CA">
   <head>
     <meta charset="utf-8" />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+      href={displayFont}
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+      href={bodyFont}
+    />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -216,6 +232,7 @@ const graph = [
       function open(value: boolean) {
         menu.setAttribute("aria-expanded", String(value));
         nav.classList.toggle("open", value);
+        if (value) nav.querySelector("a")?.focus();
       }
       menu.addEventListener("click", () =>
         open(menu.getAttribute("aria-expanded") !== "true"),
