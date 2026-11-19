@@ -1,0 +1,20 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  cover: NonNullable<CollectionEntry<"blog">["data"]["coverImage"]>;
+  priority?: boolean;
+}
+const { cover, priority = false } = Astro.props;
+---
+
+<img
+  class="journal-cover"
+  src={cover.src}
+  alt={cover.alt}
+  width={cover.width}
+  height={cover.height}
+  loading={priority ? "eager" : "lazy"}
+  fetchpriority={priority ? "high" : undefined}
+  decoding="async"
+/>

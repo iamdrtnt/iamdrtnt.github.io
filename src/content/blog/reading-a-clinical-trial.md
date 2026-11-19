@@ -1,10 +1,21 @@
 ---
 title: "Reading a clinical trial beyond the abstract"
 description: "A practical reading sequence for connecting a trial’s question, outcome, and analysis to the claim in its abstract."
-date: 2026-11-17
+publishDate: 2026-11-17
 category: Medical Research
 tags: [Clinical trials, Evidence-based medicine, Study design]
 featured: true
+seoTitle: "How to read a clinical trial beyond the abstract"
+seoDescription: "Learn how to read a clinical trial by checking its comparison group, planned primary outcome, effect size, and uncertainty."
+coverImage:
+  src: /images/journal/reading-a-clinical-trial.webp
+  alt: "A brushed-steel caliper above two parallel graphite specimen slides."
+  width: 1440
+  height: 810
+takeaways:
+  - "Identify who was studied, what was compared, and how long follow-up lasted."
+  - "Check the planned primary outcome against the finding highlighted in the abstract."
+  - "Read the size of the effect alongside its uncertainty and the number of participants analysed."
 ---
 
 An abstract compresses a trial into a few hundred words. That makes it a useful entry point, but a difficult place to judge whether the findings answer a particular clinical question. Before reading the authors’ conclusion, try writing down the decision you hope the paper can inform.
@@ -24,6 +35,8 @@ An outcome can be measured precisely and still be distant from a patient’s imm
 ## Read the estimate in context
 
 Consider the size of the difference and the uncertainty around it. For a binary outcome, counts and denominators can help you interpret a relative measure alongside the absolute difference between groups. Check how many participants contributed data to the analysis and what the researchers did about missing observations.
+
+## Summarize what the trial measured
 
 Finish with one sentence that names the participants, comparison, outcome, and follow-up period. If that sentence is hard to write, the missing element is a good reason to return to the full report.
 

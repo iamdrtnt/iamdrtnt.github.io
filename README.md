@@ -56,24 +56,9 @@ The five chapters are written in HTML in `src/components/StethoscopeSequence.ast
 
 The Pages URL uses `/` as its base. Keep the source on the review branch until the owner approves publication.
 
-## Add a blog article
+## Publish in the Journal
 
-Copy `templates/article.md` to `src/content/blog/<descriptive-english-slug>.md`. The filename becomes the public slug. Use the existing articles as examples. Add the title, a unique description, the actual publication date, category, tags, and body. Keep `draft: true` while writing, then set it to `false` in the publication PR. Drafts have no public route and are absent from article lists, RSS, and the sitemap. Keep future articles in draft until their intended release.
-
-Use the category names in `src/data/categories.ts`. Mark one published article `featured: true` for the blog lead. Otherwise the latest published article is featured. Equal-date posts sort by slug. Reading time, related links, date formatting, metadata, social sharing, and table-of-contents links are generated automatically. Three or more second-level headings enable the contents list. Link citations to real sources and clearly distinguish hypothetical examples from findings.
-
-An optional image accepts the following front matter. Supply an owner-approved image and its actual dimensions and alt text.
-
-```yaml
-image:
-  src: /images/your-article-image.webp
-  alt: Describe the actual image in English
-  width: 1200
-  height: 800
-  caption: Optional English caption and credit
-```
-
-A future Codex request can say: “Write an English blog article about how to assess a healthcare AI model. Use verified references, follow the existing Markdown template, run the build and tests, and open a PR for review.”
+Ask Codex to “Write an SEO-optimised Journal article about AI in primary care and open a PR for review.” The [Journal guide](docs/journal.md) covers research, writing, SEO, cover art, preview, and the review branch. Start from the [article template](templates/article.md) for any new post.
 
 ## Update professional records
 

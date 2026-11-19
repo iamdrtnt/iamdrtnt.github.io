@@ -1,99 +1,98 @@
 ---
 import Base from "../../layouts/Base.astro";
-import PageHead from "../../components/PageHead.astro";
-import ArticleCard from "../../components/ArticleCard.astro";
 import Icon from "../../components/Icon.astro";
-import {
-  articles,
-  articleUrl,
-  dateLabel,
-  readingTime,
-} from "../../lib/articles";
+import JournalCover from "../../components/JournalCover.astro";
+import JournalEntry from "../../components/JournalEntry.astro";
+import { articles, articleUrl, dateLabel, readingTime } from "../../lib/articles";
 import { categories } from "../../data/categories";
+import "../../styles/journal.css";
+
 const posts = await articles();
-const featured = posts.find((p) => p.data.featured) || posts[0];
+const featured = posts.find((post) => post.data.featured) ?? posts[0];
+const topics = categories.filter((category) =>
+  posts.some((post) => post.data.category === category),
+);
 ---
 
 <Base
-  title="Scientific and Professional Blog | Mohammadreza Norouzi"
-  description="Read articles on clinical research, evidence-based medicine, neuroscience, and the evaluation of healthcare technology."
+  title="Journal on Medicine, Research and Healthcare AI | Mohammadreza Norouzi"
+  description="Essays on clinical medicine, medical research, healthcare AI, and how evidence shapes decisions in practice."
   type="Blog"
-  label="Blog"
+  label="Journal"
 >
-  <PageHead
-    title="Journal"
-    parent="Ideas, Evidence & Perspectives"
-    description={"Exploring the evolving world of medicine, research, and healthcare innovation. This journal brings together scientific insights, emerging technologies, and personal perspectives on the challenges and opportunities shaping modern healthcare. From clinical medicine and medical research to artificial intelligence, healthcare management, and entrepreneurship, I explore ideas that connect scientific knowledge with practical solutions. My goal is to examine complex questions through evidence-based thinking while making meaningful insights accessible to a broader audience."}
-  />
-  <div class="wrap section">
-    {featured && (
-      <article class="featured">
-        <div class="featured-copy">
-          <p class="eyebrow">
-            <span></span>Featured article
-          </p>
-          <p class="dark-kicker">{featured.data.category}</p>
-          <h2>
-            <a href={articleUrl(featured.id)}>{featured.data.title}</a>
-          </h2>
-          <p>{featured.data.description}</p>
-          <div class="feature-foot">
-            <a class="textlink" href={articleUrl(featured.id)}>
-              Read article <Icon name="arrow" size={16} />
-            </a>
-            <span>
-              {dateLabel(featured.data.date)} · {readingTime(featured)} min read
-            </span>
-          </div>
-        </div>
+  <div class="journal">
+    <div class="journal-masthead">
+      <div class="journal-wrap">
+        <header class="journal-intro">
+          <h1>Journal<span aria-hidden="true">.</span></h1>
+          <p>Essays on clinical medicine, medical research, and healthcare innovation, with a focus on how evidence shapes decisions in practice.</p>
+        </header>
+        {featured && (
+          <article class:list={["journal-feature", { "journal-feature-with-cover": featured.data.coverImage }]}>
+            {featured.data.coverImage && (
+              <JournalCover cover={featured.data.coverImage} priority />
+            )}
+            <div class="journal-feature-copy">
+              <p class="journal-label journal-feature-label">
+                Featured article <span>{featured.data.category}</span>
+              </p>
+              <h2><a href={articleUrl(featured.id)}>{featured.data.title}</a></h2>
+              <p class="journal-feature-description">{featured.data.description}</p>
+              <div class="journal-feature-footer">
+                <div class="journal-meta">
+                  <time datetime={featured.data.publishDate.toISOString()}>{dateLabel(featured.data.publishDate)}</time>
+                  <span>{readingTime(featured)} min read</span>
+                </div>
+                <span class="journal-feature-arrow" aria-hidden="true">
+                  <Icon name="diagonal" size={21} />
+                </span>
+              </div>
+            </div>
+          </article>
+        )}
+      </div>
+    </div>
 
-      </article>
-    )}
-    <div class="section-heading">
-      <h2>All articles</h2>
-      <a class="textlink" href="/rss.xml">
-        RSS feed <Icon name="diagonal" size={16} />
-      </a>
-    </div>
-    <div class="filters" role="group" aria-label="Filter articles by category">
-      <button data-filter="All" aria-pressed="true">
-        All topics
-      </button>
-      {categories
-        .filter((c) => posts.some((p) => p.data.category === c))
-        .map((c) => (
-          <button data-filter={c} aria-pressed="false">
-            {c}
-          </button>
-        ))}
-    </div>
-    <p class="sr-only" aria-live="polite" id="filter-status"></p>
-    <div class="card-grid">
-      {posts.map((post) => (
-        <ArticleCard post={post} />
-      ))}
-    </div>
-    {!posts.length && <p>Articles will appear here as they are published.</p>}
+    <section class="journal-wrap journal-archive" aria-labelledby="journal-archive-heading">
+      <header class="journal-section-head">
+        <h2 id="journal-archive-heading">All articles</h2>
+        <a class="journal-link" href="/rss.xml">RSS feed <Icon name="diagonal" size={16} /></a>
+      </header>
+      {topics.length > 1 && (
+        <div class="journal-filters" role="group" aria-label="Filter articles by category">
+          <button type="button" data-journal-filter="" aria-pressed="true">All topics</button>
+          {topics.map((category) => (
+            <button type="button" data-journal-filter={category} aria-pressed="false">
+              {category}
+            </button>
+          ))}
+        </div>
+      )}
+      <p class="sr-only" aria-live="polite" id="journal-filter-status"></p>
+      <div class="journal-list">
+        {posts.map((post) => <JournalEntry post={post} />)}
+      </div>
+      {posts.length === 0 && <p>Articles will appear here as they are published.</p>}
+    </section>
   </div>
   <script>
-    const buttons =
-      document.querySelectorAll<HTMLButtonElement>("[data-filter]");
-    const cards = document.querySelectorAll<HTMLElement>("[data-category]");
-    buttons.forEach((b) =>
-      b.addEventListener("click", () => {
-        buttons.forEach((item) =>
-          item.setAttribute("aria-pressed", String(item === b)),
-        );
+    const buttons = document.querySelectorAll<HTMLButtonElement>("[data-journal-filter]");
+    const entries = document.querySelectorAll<HTMLElement>("[data-journal-category]");
+    const status = document.querySelector("#journal-filter-status");
+
+    for (const button of buttons) {
+      button.addEventListener("click", () => {
+        for (const item of buttons) {
+          item.setAttribute("aria-pressed", String(item === button));
+        }
+        const category = button.dataset.journalFilter;
         let count = 0;
-        cards.forEach((c) => {
-          c.hidden =
-            b.dataset.filter !== "All" &&
-            c.dataset.category !== b.dataset.filter;
-          if (!c.hidden) count++;
-        });
-        document.querySelector("#filter-status")!.textContent =
-          count + " " + (count === 1 ? "article" : "articles") + " shown.";
-      }),
-    );
+        for (const entry of entries) {
+          entry.hidden = Boolean(category && entry.dataset.journalCategory !== category);
+          if (!entry.hidden) count++;
+        }
+        if (status) status.textContent = count + (count === 1 ? " article shown." : " articles shown.");
+      });
+    }
   </script>
 </Base>

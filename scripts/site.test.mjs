@@ -218,3 +218,32 @@ test("the sitemap, robots, and RSS match the indexable pages and published artic
     ),
   );
 });
+
+test("Journal covers carry through to the archive and article metadata", () => {
+  const archive = documents.find(({ pathname }) => pathname === "/blog/");
+  const entries = archive.$(".journal-entry").toArray();
+  const posts = indexable.filter(({ pathname }) => pathname.startsWith("/blog/") && pathname !== "/blog/");
+  assert.deepEqual(
+    entries.map((entry) => archive.$(entry).find("h3 a").attr("href")).sort(),
+    posts.map(({ pathname }) => pathname).sort(),
+  );
+  for (const { $, pathname } of posts) {
+    const image = $(".journal-article-figure img");
+    if (!image.length) continue;
+
+    const src = image.attr("src");
+    const alt = image.attr("alt");
+    const entry = entries.find((item) => archive.$(item).find("h3 a").attr("href") === pathname);
+    const shareImage = new URL(src, origin).href;
+    const schema = JSON.parse($('script[type="application/ld+json"]').text());
+    const article = schema["@graph"].find((node) => node["@type"] === "BlogPosting");
+
+    assert.equal(archive.$(entry).find("img").attr("src"), src, pathname);
+    assert.equal(archive.$(entry).find("img").attr("alt"), alt, pathname);
+    assert.equal($('meta[property="og:image"]').attr("content"), shareImage, pathname);
+    assert.equal($('meta[property="og:image:alt"]').attr("content"), alt, pathname);
+    assert.equal($('meta[name="twitter:image"]').attr("content"), shareImage, pathname);
+    assert.equal($('meta[name="twitter:image:alt"]').attr("content"), alt, pathname);
+    assert.equal(article.image, shareImage, pathname);
+  }
+});
