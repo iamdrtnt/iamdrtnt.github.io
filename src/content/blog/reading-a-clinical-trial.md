@@ -4,7 +4,7 @@ description: "A practical reading sequence for connecting a trial’s question, 
 publishDate: 2026-11-17
 category: Medical Research
 tags: [Clinical trials, Evidence-based medicine, Study design]
-featured: true
+featured: false
 seoTitle: "How to read a clinical trial beyond the abstract"
 seoDescription: "Learn how to read a clinical trial by checking its comparison group, planned primary outcome, effect size, and uncertainty."
 coverImage:
