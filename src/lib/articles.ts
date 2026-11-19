@@ -2,10 +2,12 @@ import { getCollection, type CollectionEntry } from "astro:content";
 export async function articles() {
   return (await getCollection("blog", ({ data }) => !data.draft)).sort(
     (a, b) =>
-      b.data.date.valueOf() - a.data.date.valueOf() || a.id.localeCompare(b.id),
+      b.data.publishDate.valueOf() - a.data.publishDate.valueOf() ||
+      a.id.localeCompare(b.id),
   );
 }
 export const readingTime = (post: CollectionEntry<"blog">) =>
+  post.data.readingTime ??
   Math.max(1, Math.ceil((post.body || "").trim().split(/\s+/).length / 200));
 export const dateLabel = (date: Date) =>
   new Intl.DateTimeFormat("en-CA", {

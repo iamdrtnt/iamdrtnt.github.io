@@ -1,9 +1,14 @@
 ---
 title: "Why the test setting matters for medical AI"
 description: "What to look for when a prediction model moves from a development dataset to a different clinical setting."
-date: 2026-11-17
+publishDate: 2026-11-17
 category: Artificial Intelligence
 tags: [Medical AI, Prediction models, External validation]
+coverImage:
+  src: /images/journal/where-a-medical-ai-model-is-tested.webp
+  alt: "A silicon chip straddles the seam between smooth and gridded graphite plates."
+  width: 1440
+  height: 810
 ---
 
 Imagine a model trained on patients referred to a specialist clinic. A community practice is considering it for an earlier stage of assessment. The name of the outcome is identical in both settings. The people who reach the point of prediction, and the information available about them, may differ considerably.
@@ -19,6 +24,8 @@ A held-out sample from the development source can tell us about performance with
 ## Separate ranking from probability
 
 A model may rank people with an outcome above those without it, yet give inaccurate absolute probabilities. Discrimination describes a model’s ability to distinguish outcomes. Calibration concerns agreement between predicted probabilities and observed frequencies. Which properties matter most depends on the decision being considered.
+
+## Bring the question back to practice
 
 A productive reading note ends with a specific question. For example, does the evaluation include people seen at the same point in the care pathway where this prediction would be used?
 

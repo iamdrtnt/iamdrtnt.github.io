@@ -1,9 +1,14 @@
 ---
 title: "Turning a clinical observation into a research question"
 description: "How defining the population, comparison, and outcome can turn a broad observation into a question that is easier to investigate."
-date: 2026-11-17
+publishDate: 2026-11-17
 category: Clinical Medicine
 tags: [Research questions, Primary healthcare]
+coverImage:
+  src: /images/journal/turning-a-clinical-observation-into-a-question.webp
+  alt: "A glass lens focuses a blue beam into a point on a graphite surface."
+  width: 1440
+  height: 810
 ---
 
 A team notices that some patients return shortly after a primary care visit. The observation is a starting point. On its own, it says little about whether a change in the service would help. A return could be a planned review, a new concern, or a sign that the original problem persisted.

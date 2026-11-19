@@ -4,5 +4,6 @@ export const categories = [
   "Artificial Intelligence",
   "Neuroscience",
   "Healthcare Innovation",
+  "Healthcare Management",
   "Personal Insights",
 ] as const;

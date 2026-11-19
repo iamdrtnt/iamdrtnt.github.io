@@ -1,0 +1,29 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { articleUrl, dateLabel, readingTime } from "../lib/articles";
+import Icon from "./Icon.astro";
+import JournalCover from "./JournalCover.astro";
+
+interface Props {
+  post: CollectionEntry<"blog">;
+}
+
+const { post } = Astro.props;
+const { category, title, description, publishDate, coverImage } = post.data;
+---
+
+<article class="journal-entry" data-journal-category={category}>
+  {coverImage && <JournalCover cover={coverImage} />}
+  <div class="journal-entry-copy">
+    <p class="journal-label">{category}</p>
+    <h3><a href={articleUrl(post.id)}>{title}</a></h3>
+    <p>{description}</p>
+  </div>
+  <div class="journal-entry-meta journal-meta">
+    <time datetime={publishDate.toISOString()}>{dateLabel(publishDate)}</time>
+    <span>{readingTime(post)} min read</span>
+  </div>
+  <span class="journal-entry-arrow" aria-hidden="true">
+    <Icon name="diagonal" size={18} />
+  </span>
+</article>
