@@ -14,7 +14,17 @@ const visit = (dir) =>
     const file = path.join(dir, entry.name);
     return entry.isDirectory() ? visit(file) : [file];
   });
-const pages = visit(root).filter((file) => file.endsWith(".html"));
+const verificationFilename = "google418b69e0f9967507.html";
+const verificationFile = path.join(root, verificationFilename);
+const pages = visit(root).filter(
+  (file) => file.endsWith(".html") && file !== verificationFile,
+);
+test("the Google verification file is copied unchanged to the site root", () => {
+  assert.deepEqual(
+    readFileSync(verificationFile),
+    readFileSync(path.join("public", verificationFilename)),
+  );
+});
 const documents = pages.map((file) => ({
   file,
   $: load(readFileSync(file, "utf8")),
