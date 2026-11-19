@@ -1,11 +1,13 @@
 ---
-import { professionalTimeline } from "../data/profile";
+import { localeFromPath } from "../i18n/locales";
+import { timelineFor } from "../i18n/profile";
+const professionalTimeline = timelineFor(localeFromPath(Astro.url.pathname));
 ---
 
 <ol class="professional-timeline" role="list">
   {professionalTimeline.map((stage) => (
     <li class={stage.status}>
-      <p class="kicker">{stage.label}</p>
+      <p class="kicker">{stage.status === "completed" ? <bdi dir="ltr">{stage.label}</bdi> : stage.label}</p>
       <h3>{stage.title}</h3>
       {stage.place && <p class="place">{stage.place}</p>}
       <p class="detail">{stage.detail}</p>

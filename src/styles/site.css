@@ -797,3 +797,52 @@ footer {
     color: black;
   }
 }
+
+.locale-switch {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  gap: 2px;
+  color: var(--silver);
+  font: 500 .7rem/1 "DM Sans Variable", Arial, sans-serif;
+}
+.locale-switch a {
+  display: inline-grid;
+  min-block-size: 44px;
+  min-inline-size: 27px;
+  place-items: center;
+  text-decoration: none;
+}
+.locale-switch a:hover,
+.locale-switch a[aria-current] {
+  color: var(--ivory);
+  text-decoration: underline;
+  text-underline-offset: .25em;
+}
+@media (max-width: 420px) {
+  .mast .bar {
+    gap: 6px;
+  }
+  .mast .brand {
+    gap: 6px;
+    max-inline-size: calc(100% - 153px);
+  }
+  .mast .brand-name {
+    font-size: clamp(.66rem, calc(4vw - .24rem), .77rem);
+    padding-inline-start: 6px;
+    white-space: normal;
+  }
+  .mast .monogram {
+    font-size: clamp(2rem, 9vw, 2.45rem);
+  }
+  .mast .controls {
+    padding-inline: 0;
+  }
+  .locale-switch a {
+    min-inline-size: 24px;
+  }
+}
+
+@media (max-width: 380px) {
+  .mast .bar { width: 92%; }
+}

@@ -3,32 +3,40 @@ import Base from "../layouts/Base.astro";
 import StethoscopeSequence from "../components/StethoscopeSequence.astro";
 import Icon from "../components/Icon.astro";
 import ArticleCard from "../components/ArticleCard.astro";
-import { profile, projects, publications } from "../data/profile";
+import { projects, publications } from "../data/profile";
 import { articles } from "../lib/articles";
 import "../styles/home.css";
-const latest = (await articles()).slice(0, 3);
+import { localeFromPath, translator, localPath } from "../i18n/locales";
+import { profileFor } from "../i18n/profile";
+
+const locale = localeFromPath(Astro.url.pathname);
+const t = translator(locale);
+const route = (path: string) => localPath(path, locale);
+const profile = profileFor(locale);
+
+const latest = (await articles(locale)).slice(0, 3);
 const directions = [
   {
-    title: "Medicine",
+    title: t("Medicine", "پزشکی"),
     href: "/experience/",
-    detail: "Working in primary healthcare taught me to assess complex clinical situations, make high-stakes decisions under pressure, and coordinate healthcare teams in demanding environments.",
+    detail: t("Working in primary healthcare taught me to assess complex clinical situations, make high-stakes decisions under pressure, and coordinate healthcare teams in demanding environments.", "کار در مراقبت‌های اولیهٔ سلامت به من آموخت وضعیت‌های بالینی پیچیده را ارزیابی کنم، در شرایط دشوار تصمیم‌های حساس بگیرم و تیم‌های درمانی را هماهنگ کنم."),
   },
   {
-    title: "Research",
+    title: t("Research", "پژوهش"),
     href: "/research/",
-    detail: "For me, research begins with curiosity: questioning what we know, exploring what we do not yet understand, and seeking meaningful answers through scientific inquiry.",
+    detail: t("For me, research begins with curiosity: questioning what we know, exploring what we do not yet understand, and seeking meaningful answers through scientific inquiry.", "برای من پژوهش با کنجکاوی آغاز می‌شود: دانسته‌ها را به پرسش می‌کشیم، نادانسته‌ها را بررسی می‌کنیم و با روش علمی به دنبال پاسخ‌های روشنگر می‌گردیم."),
   },
   {
-    title: "Innovation",
+    title: t("Innovation", "نوآوری"),
     href: "/research/#healthcare-innovation",
-    detail: "Building on my medical background and Executive Healthcare MBA education, I am interested in exploring how healthcare management, entrepreneurship, and digital technologies can address systemic challenges and create more accessible, efficient, and equitable healthcare services.",
+    detail: t("Building on my medical background and Executive Healthcare MBA education, I am interested in exploring how healthcare management, entrepreneurship, and digital technologies can address systemic challenges and create more accessible, efficient, and equitable healthcare services.", "با تکیه بر پیشینهٔ پزشکی و آموزش مدیریت اجرایی در سلامت، می‌خواهم بررسی کنم که مدیریت سلامت، کارآفرینی و فناوری‌های دیجیتال چگونه می‌توانند به حل چالش‌های ساختاری و ارائهٔ خدمات سلامتِ دسترس‌پذیرتر، کارآمدتر و عادلانه‌تر کمک کنند."),
   },
 ];
 ---
 
 <Base
-  title="Mohammadreza Norouzi | Medical Graduate and Research Portfolio"
-  description="Explore Mohammadreza Norouzi’s medical education, research interests, scientific writing, and professional background in Vancouver, British Columbia."
+  title={t("Mohammadreza Norouzi | Medical Graduate and Research Portfolio", "محمدرضا نوروزی | دانش‌آموختهٔ پزشکی و سوابق پژوهشی")}
+  description={t("Explore Mohammadreza Norouzi’s medical education, research interests, scientific writing, and professional background in Vancouver, British Columbia.", "با تحصیلات پزشکی، علایق پژوهشی، نوشته‌های علمی و سوابق حرفه‌ای محمدرضا نوروزی در ونکوور، بریتیش کلمبیا آشنا شوید.")}
   type="ProfilePage"
 >
   <StethoscopeSequence />
@@ -36,13 +44,13 @@ const directions = [
     <div class="wrap trajectory-grid">
       <div>
         <p class="overline">
-          <i></i> Clinical perspective
+          <i></i> {t("Clinical perspective", "دیدگاه بالینی")}
         </p>
         <p class="trajectory-intro">{profile.introduction}</p>
       </div>
       <div class="directions">
         {directions.map(({ title, href, detail }) => (
-          <a href={href}>
+          <a href={route(href)}>
             <h2>{title}</h2>
             <p>{detail}</p>
             <Icon name="diagonal" size={20} />
@@ -54,25 +62,25 @@ const directions = [
   <section class="paper-scene">
     <div class="wrap home-section">
       <div class="chapter-line">
-        <span>About me</span>
-        <span>Biography &amp; education</span>
+        <span>{t("About me", "دربارهٔ من")}</span>
+        <span>{t("Biography & education", "زندگی‌نامه و تحصیلات")}</span>
       </div>
       <div class="bio-spread">
         <div>
           <h2 class="display">
-            From Clinical Practice <em>to New Perspectives</em>
+            {t("From Clinical Practice", "از طبابت بالینی")} <em>{t("to New Perspectives", "تا دیدگاه‌های تازه")}</em>
           </h2>
           <p class="bio-text">{profile.bio}</p>
           <p class="disclosure">{profile.disclosure}</p>
-          <a class="textlink" href="/about/">
-            Read my biography <Icon name="arrow" size={17} />
+          <a class="textlink" href={route("/about/")}>
+            {t("Read my biography", "زندگی‌نامهٔ من را بخوانید")} <Icon name="arrow" size={17} />
           </a>
         </div>
         <div class="education">
           {profile.portrait && (
             <img class="owner-portrait" {...profile.portrait} loading="lazy" />
           )}
-          <h3 class="small-label">Academic background</h3>
+          <h3 class="small-label">{t("Academic background", "سوابق تحصیلی")}</h3>
           {profile.education.map((e) => (
             <div class="degree">
               <h4>{e.title}</h4>
@@ -81,10 +89,10 @@ const directions = [
               </p>
             </div>
           ))}
-          <a class="textlink" href="/experience/">
-            Education and experience <Icon name="diagonal" size={15} />
+          <a class="textlink" href={route("/experience/")}>
+            {t("Education and experience", "تحصیلات و سوابق")} <Icon name="diagonal" size={15} />
           </a>
-          <h3 class="small-label skills-heading">Professional skills</h3>
+          <h3 class="small-label skills-heading">{t("Professional skills", "مهارت‌های حرفه‌ای")}</h3>
           <ul class="skill-list">
             {profile.skills.map((s) => (
               <li>{s}</li>
@@ -97,8 +105,8 @@ const directions = [
   <section class="research-scene">
     <div class="wrap home-section">
       <div class="chapter-line">
-        <span>Research &amp; publications</span>
-        <span>Research interests</span>
+        <span>{t("Research & publications", "پژوهش و آثار علمی")}</span>
+        <span>{t("Research interests", "علایق پژوهشی")}</span>
       </div>
       <div class="research-spread">
         <div>
@@ -106,16 +114,16 @@ const directions = [
             05
           </span>
           <h2 class="display">
-            Areas of <em>inquiry.</em>
+            {t("Areas of", "زمینه‌های")} <em>{t("inquiry.", "پژوهش")}</em>
           </h2>
-          <a class="textlink" href="/research/">
-            Research portfolio <Icon name="arrow" size={17} />
+          <a class="textlink" href={route("/research/")}>
+            {t("Research portfolio", "سوابق پژوهشی")} <Icon name="arrow" size={17} />
           </a>
         </div>
         <div class="research-index">
           {profile.research.slice(0, 3).map((r) => (
             <a
-              href={"/research/#" + r.title.toLowerCase().replaceAll(" ", "-")}
+              href={route("/research/#" + r.id)}
             >
               <div>
                 <h3>{r.title}</h3>
@@ -125,13 +133,13 @@ const directions = [
             </a>
           ))}
           <div class="publication-note">
-            <a class="textlink" href="/research/#publications">
-              Publications <Icon name="arrow" size={16} />
+            <a class="textlink" href={route("/research/#publications")}>
+              {t("Publications", "آثار علمی")} <Icon name="arrow" size={16} />
             </a>
             <p>
               {projects[0]?.title ||
                 publications[0]?.title ||
-                "Project and publication records will appear here once verified."}
+                t("Project and publication records will appear here once verified.", "سوابق طرح‌ها و آثار علمی پس از تأیید در این بخش قرار می‌گیرند.")}
             </p>
           </div>
         </div>
@@ -141,15 +149,15 @@ const directions = [
   <section class="paper-scene">
     <div class="wrap home-section">
       <div class="chapter-line">
-        <span>Scientific writing</span>
-        <span>Latest articles</span>
+        <span>{t("Scientific writing", "نگارش علمی")}</span>
+        <span>{t("Latest articles", "تازه‌ترین مقاله‌ها")}</span>
       </div>
       <div class="journal-head">
         <h2 class="display">
-          The <em>journal.</em>
+          {t("The", "")} <em>{t("journal.", "مجله")}</em>
         </h2>
-        <a class="textlink" href="/blog/">
-          Visit the blog <Icon name="arrow" size={17} />
+        <a class="textlink" href={route("/blog/")}>
+          {t("Visit the blog", "رفتن به مجله")} <Icon name="arrow" size={17} />
         </a>
       </div>
       <div class="journal-spread">
@@ -162,20 +170,19 @@ const directions = [
   <section class="closing">
     <div class="wrap home-section">
       <p class="overline">
-        <i></i> Contact
+        <i></i> {t("Contact", "تماس")}
       </p>
       <div class="closing-grid">
         <h2 class="display">
-          Connect <em>professionally.</em>
+          {t("Connect", "ارتباط")} <em>{t("professionally.", "حرفه‌ای")}</em>
         </h2>
         <div>
           <p>
-            Professional profiles and contact information for research and
-            academic enquiries.
+            {t("Professional profiles and contact information for research and academic enquiries.", "نمایه‌های حرفه‌ای و اطلاعات تماس برای گفت‌وگوهای پژوهشی و دانشگاهی.")}
           </p>
           <div class="hero-actions">
-            <a class="button ivory" href="/contact/">
-              Contact details <Icon name="arrow" size={16} />
+            <a class="button ivory" href={route("/contact/")}>
+              {t("Contact details", "اطلاعات تماس")} <Icon name="arrow" size={16} />
             </a>
             {profile.profiles.map((p) => (
               <a class="quiet-link" href={p.url} rel="me">

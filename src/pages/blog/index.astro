@@ -3,11 +3,16 @@ import Base from "../../layouts/Base.astro";
 import Icon from "../../components/Icon.astro";
 import JournalCover from "../../components/JournalCover.astro";
 import JournalEntry from "../../components/JournalEntry.astro";
-import { articles, articleUrl, dateLabel, readingTime } from "../../lib/articles";
+import { articles, articleUrl, dateLabel, readingLabel } from "../../lib/articles";
 import { categories } from "../../data/categories";
 import "../../styles/journal.css";
 
-const posts = await articles();
+import { localeFromPath, localPath, translator } from "../../i18n/locales";
+import { categoryLabel } from "../../i18n/categories";
+
+const locale = localeFromPath(Astro.url.pathname);
+const t = translator(locale);
+const posts = await articles(locale);
 const featured = posts.find((post) => post.data.featured) ?? posts[0];
 const topics = categories.filter((category) =>
   posts.some((post) => post.data.category === category),
@@ -15,17 +20,17 @@ const topics = categories.filter((category) =>
 ---
 
 <Base
-  title="Journal on Medicine, Research and Healthcare AI | Mohammadreza Norouzi"
-  description="Essays on clinical medicine, medical research, healthcare AI, and how evidence shapes decisions in practice."
+  title={t("Journal on Medicine, Research and Healthcare AI | Mohammadreza Norouzi", "مجلهٔ پزشکی، پژوهش و هوش مصنوعی در سلامت | محمدرضا نوروزی")}
+  description={t("Essays on clinical medicine, medical research, healthcare AI, and how evidence shapes decisions in practice.", "نوشته‌هایی دربارهٔ پزشکی بالینی، پژوهش پزشکی، هوش مصنوعی در سلامت و نقش شواهد در تصمیم‌گیری بالینی.")}
   type="Blog"
-  label="Journal"
+  label={t("Journal", "مجله")}
 >
   <div class="journal">
     <div class="journal-masthead">
       <div class="journal-wrap">
         <header class="journal-intro">
-          <h1>Journal<span aria-hidden="true">.</span></h1>
-          <p>Essays on clinical medicine, medical research, and healthcare innovation, with a focus on how evidence shapes decisions in practice.</p>
+          <h1>{t("Journal", "مجله")}<span aria-hidden="true">.</span></h1>
+          <p>{t("Essays on clinical medicine, medical research, and healthcare innovation, with a focus on how evidence shapes decisions in practice.", "نوشته‌هایی دربارهٔ پزشکی بالینی، پژوهش پزشکی و نوآوری در سلامت، با تمرکز بر نقش شواهد در تصمیم‌گیری در عمل.")}</p>
         </header>
         {featured && (
           <article class:list={["journal-feature", { "journal-feature-with-cover": featured.data.coverImage }]}>
@@ -34,14 +39,14 @@ const topics = categories.filter((category) =>
             )}
             <div class="journal-feature-copy">
               <p class="journal-label journal-feature-label">
-                Featured article <span>{featured.data.category}</span>
+                {t("Featured article", "مقالهٔ برگزیده")} <span>{categoryLabel(featured.data.category, locale)}</span>
               </p>
-              <h2><a href={articleUrl(featured.id)}>{featured.data.title}</a></h2>
+              <h2><a href={articleUrl(featured.id, locale)}>{featured.data.title}</a></h2>
               <p class="journal-feature-description">{featured.data.description}</p>
               <div class="journal-feature-footer">
                 <div class="journal-meta">
-                  <time datetime={featured.data.publishDate.toISOString()}>{dateLabel(featured.data.publishDate)}</time>
-                  <span>{readingTime(featured)} min read</span>
+                  <time datetime={featured.data.publishDate.toISOString()}>{dateLabel(featured.data.publishDate, locale)}</time>
+                  <span>{readingLabel(featured, locale)}</span>
                 </div>
                 <span class="journal-feature-arrow" aria-hidden="true">
                   <Icon name="diagonal" size={21} />
@@ -55,15 +60,15 @@ const topics = categories.filter((category) =>
 
     <section class="journal-wrap journal-archive" aria-labelledby="journal-archive-heading">
       <header class="journal-section-head">
-        <h2 id="journal-archive-heading">All articles</h2>
-        <a class="journal-link" href="/rss.xml">RSS feed <Icon name="diagonal" size={16} /></a>
+        <h2 id="journal-archive-heading">{t("All articles", "همهٔ مقاله‌ها")}</h2>
+        <a class="journal-link" href={localPath("/rss.xml", locale)}>{t("RSS feed", "خوراک RSS")} <Icon name="diagonal" size={16} /></a>
       </header>
       {topics.length > 1 && (
-        <div class="journal-filters" role="group" aria-label="Filter articles by category">
-          <button type="button" data-journal-filter="" aria-pressed="true">All topics</button>
+        <div class="journal-filters" role="group" aria-label={t("Filter articles by category", "پالایش مقاله‌ها بر اساس موضوع")}>
+          <button type="button" data-journal-filter="" aria-pressed="true">{t("All topics", "همهٔ موضوع‌ها")}</button>
           {topics.map((category) => (
             <button type="button" data-journal-filter={category} aria-pressed="false">
-              {category}
+              {categoryLabel(category, locale)}
             </button>
           ))}
         </div>
@@ -72,10 +77,12 @@ const topics = categories.filter((category) =>
       <div class="journal-list">
         {posts.map((post) => <JournalEntry post={post} />)}
       </div>
-      {posts.length === 0 && <p>Articles will appear here as they are published.</p>}
+      {posts.length === 0 && <p>{t("Articles will appear here as they are published.", "مقاله‌ها پس از انتشار در این بخش قرار می‌گیرند.")}</p>}
     </section>
   </div>
   <script>
+    const persian = document.documentElement.lang === "fa-IR";
+    const numbers = new Intl.NumberFormat(document.documentElement.lang);
     const buttons = document.querySelectorAll<HTMLButtonElement>("[data-journal-filter]");
     const entries = document.querySelectorAll<HTMLElement>("[data-journal-category]");
     const status = document.querySelector("#journal-filter-status");
@@ -91,7 +98,11 @@ const topics = categories.filter((category) =>
           entry.hidden = Boolean(category && entry.dataset.journalCategory !== category);
           if (!entry.hidden) count++;
         }
-        if (status) status.textContent = count + (count === 1 ? " article shown." : " articles shown.");
+        if (status) {
+          status.textContent = persian
+            ? `${numbers.format(count)} مقاله نمایش داده شد.`
+            : count + (count === 1 ? " article shown." : " articles shown.");
+        }
       });
     }
   </script>

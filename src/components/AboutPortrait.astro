@@ -1,12 +1,14 @@
 ---
 import type { ImageMetadata } from "astro";
 import { Image } from "astro:assets";
+import { localeFromPath, translator } from "../i18n/locales";
 
 interface Props {
   image: ImageMetadata;
 }
 
 const { image } = Astro.props;
+const t = translator(localeFromPath(Astro.url.pathname));
 ---
 
 <about-portrait>
@@ -18,7 +20,7 @@ const { image } = Astro.props;
     <Image
       class="portrait-subject"
       src={image}
-      alt="Portrait of Mohammadreza Norouzi"
+      alt={t("Portrait of Mohammadreza Norouzi", "پرترهٔ محمدرضا نوروزی")}
       format="webp"
       quality={84}
       widths={[320, 480, 720, 960, 1120].filter((width) => width <= image.width)}

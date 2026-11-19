@@ -1,22 +1,28 @@
 ---
 import Base from "../layouts/Base.astro";
 import Icon from "../components/Icon.astro";
-import { profile } from "../data/profile";
+
+import { localeFromPath, translator } from "../i18n/locales";
+import { profileFor } from "../i18n/profile";
+
+const locale = localeFromPath(Astro.url.pathname);
+const t = translator(locale);
+const profile = profileFor(locale);
 
 const interests = [
-  "Clinical & Medical Research",
-  "Healthcare Innovation",
-  "Digital Health",
-  "Startup Partnerships",
-  "Academic Opportunities",
-  "Scientific Writing",
+  t("Clinical & Medical Research", "پژوهش بالینی و پزشکی"),
+  t("Healthcare Innovation", "نوآوری در سلامت"),
+  t("Digital Health", "سلامت دیجیتال"),
+  t("Startup Partnerships", "همکاری با کسب‌وکارهای نوپا"),
+  t("Academic Opportunities", "فرصت‌های دانشگاهی"),
+  t("Scientific Writing", "نگارش علمی"),
 ];
 ---
 
 <Base
-  title="Contact and Professional Profiles | Mohammadreza Norouzi"
-  description="Find verified public profiles and professional contact information for Mohammadreza Norouzi, a medical graduate based in Vancouver, Canada."
-  label="Contact"
+  title={t("Contact and Professional Profiles | Mohammadreza Norouzi", "تماس و نمایه‌های حرفه‌ای | محمدرضا نوروزی")}
+  description={t("Find verified public profiles and professional contact information for Mohammadreza Norouzi, a medical graduate based in Vancouver, Canada.", "اطلاعات تماس کاری و نمایه‌های عمومی تأییدشدهٔ محمدرضا نوروزی، دانش‌آموختهٔ پزشکی ساکن ونکوور کانادا.")}
+  label={t("Contact", "تماس")}
 >
   <div class="contact" data-contact>
     <div class="contact-light" aria-hidden="true"></div>
@@ -24,25 +30,21 @@ const interests = [
       <header class="invitation" data-contact-stage="invitation">
         <p class="eyebrow">
           <span aria-hidden="true"></span>
-          Contact / Collaboration
+          {t("Contact / Collaboration", "تماس / همکاری")}
         </p>
-        <h1>Let's Build <em>Better Healthcare.</em></h1>
+        <h1>{t("Let's Build", "بیایید با هم")} <em>{t("Better Healthcare.", "مراقبت بهتری فراهم کنیم.")}</em></h1>
       </header>
 
       <div class="contact-details">
         <div class="contact-intro" data-contact-stage="intro">
           <p class="contact-lead">
-            Meaningful progress begins with meaningful connections.
+            {t("Meaningful progress begins with meaningful connections.", "پیشرفت پایدار از ارتباط‌های سازنده آغاز می‌شود.")}
           </p>
           <p>
-            I'm interested in connecting with researchers, healthcare professionals,
-            entrepreneurs, and organisations working to advance medicine and improve
-            healthcare systems.
+            {t("I'm interested in connecting with researchers, healthcare professionals, entrepreneurs, and organisations working to advance medicine and improve healthcare systems.", "مایلم با پژوهشگران، متخصصان سلامت، کارآفرینان و سازمان‌هایی ارتباط برقرار کنم که برای پیشرفت پزشکی و بهبود نظام‌های سلامت تلاش می‌کنند.")}
           </p>
           <p>
-            Whether you're exploring research collaboration, digital health, healthcare
-            innovation, startup partnerships, academic opportunities, or scientific
-            writing, I'd welcome the conversation.
+            {t("Whether you're exploring research collaboration, digital health, healthcare innovation, startup partnerships, academic opportunities, or scientific writing, I'd welcome the conversation.", "اگر به همکاری پژوهشی، سلامت دیجیتال، نوآوری در سلامت، همکاری با کسب‌وکارهای نوپا، فرصت‌های دانشگاهی یا نگارش علمی علاقه‌مندید، از گفت‌وگو با شما استقبال می‌کنم.")}
           </p>
         </div>
 
@@ -51,13 +53,13 @@ const interests = [
           aria-labelledby="contact-email"
           data-contact-stage="channels"
         >
-          <h2 id="contact-email" class="small-label">Direct email</h2>
+          <h2 id="contact-email" class="small-label">{t("Direct email", "ایمیل مستقیم")}</h2>
           <a class="button contact-button" href={"mailto:" + profile.email}>
-            Start a Conversation
+            {t("Start a Conversation", "گفت‌وگو را آغاز کنید")}
             <Icon name="arrow" size={18} />
           </a>
-          <p class="contact-address">{profile.email}</p>
-          <ul class="contact-profiles" role="list" aria-label="Professional profiles">
+          <p class="contact-address"><bdi dir="ltr">{profile.email}</bdi></p>
+          <ul class="contact-profiles" role="list" aria-label={t("Professional profiles", "نمایه‌های حرفه‌ای")}>
             {
               profile.profiles.map(({ label, url }) => (
                 <li>
@@ -73,7 +75,7 @@ const interests = [
       </div>
 
       <section class="contact-interests" aria-labelledby="contact-interests">
-        <h2 id="contact-interests" class="small-label">Open to collaboration</h2>
+        <h2 id="contact-interests" class="small-label">{t("Open to collaboration", "آمادهٔ همکاری")}</h2>
         <ul class="tags" role="list">
           {
             interests.map((interest) => (

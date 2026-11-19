@@ -4,7 +4,14 @@ import PageHead from "../components/PageHead.astro";
 import Icon from "../components/Icon.astro";
 import AboutPortrait from "../components/AboutPortrait.astro";
 import type { ImageMetadata } from "astro";
-import { profile } from "../data/profile";
+
+import { localeFromPath, translator, localPath } from "../i18n/locales";
+import { profileFor } from "../i18n/profile";
+
+const locale = localeFromPath(Astro.url.pathname);
+const t = translator(locale);
+const route = (path: string) => localPath(path, locale);
+const profile = profileFor(locale);
 
 const portraits = import.meta.glob<ImageMetadata>(
   "../assets/mohammadreza-norouzi-portrait.webp",
@@ -14,38 +21,38 @@ const portrait = portraits["../assets/mohammadreza-norouzi-portrait.webp"];
 ---
 
 <Base
-  title="About Mohammadreza Norouzi | Medical Background and Biography"
-  description="Read about Mohammadreza Norouzi’s medical education in Iran, prior general practice, healthcare management training, and current research interests in Vancouver."
-  label="About"
+  title={t("About Mohammadreza Norouzi | Medical Background and Biography", "دربارهٔ محمدرضا نوروزی | زندگی‌نامه و پیشینهٔ پزشکی")}
+  description={t("Read about Mohammadreza Norouzi’s medical education in Iran, prior general practice, healthcare management training, and current research interests in Vancouver.", "با تحصیلات پزشکی محمدرضا نوروزی در ایران، سابقهٔ طبابت عمومی، آموزش مدیریت سلامت و علایق پژوهشی کنونی او در ونکوور آشنا شوید.")}
+  label={t("About", "درباره")}
   type="ProfilePage"
 >
   <PageHead
-    title="Beyond the Practice of Medicine"
-    description="Driven by curiosity. Inspired by people. Focused on change."
+    title={t("Beyond the Practice of Medicine", "فراتر از طبابت")}
+    description={t("Driven by curiosity. Inspired by people. Focused on change.", "کنجکاوی انگیزهٔ من است، مردم الهام‌بخش من‌اند و تغییر هدف من است.")}
   />
   <div class="wrap section editorial">
     <div>
       {portrait && <AboutPortrait image={portrait} />}
       <aside class="aside-card">
         <Icon name="pin" size={26} />
-        <h2>Based in Vancouver</h2>
-        <p>British Columbia, Canada</p>
-        <a class="textlink" href="/cv/">
-          Curriculum vitae <Icon name="arrow" size={16} />
+        <h2>{t("Based in Vancouver", "ساکن ونکوور")}</h2>
+        <p>{t("British Columbia, Canada", "بریتیش کلمبیا، کانادا")}</p>
+        <a class="textlink" href={route("/cv/")}>
+          {t("Curriculum vitae", "رزومه")} <Icon name="arrow" size={16} />
         </a>
       </aside>
     </div>
     <div class="prose">
-      <h2>Professional biography</h2>
+      <h2>{t("Professional biography", "زندگی‌نامهٔ حرفه‌ای")}</h2>
       <p class="lead">{profile.bio}</p>
-      <h2>Clinical practice and community health</h2>
-      <p>As I moved from medical education into clinical practice, that curiosity developed into a broader sense of purpose. Practising medicine in underserved communities exposed me to the profound differences in health and well-being that can exist within the same society. I saw how access to healthcare, available resources, and socioeconomic circumstances can shape people's opportunities to live healthier lives.</p>
-      <p>These experiences changed the way I think about medicine. I came to see that improving health requires more than treating individual patients. It also means questioning how healthcare is organised, identifying gaps in access, and exploring solutions that can benefit entire communities.</p>
-      <h2>Medicine, Research, and Innovation</h2>
-      <p>Today, my interests bring together three interconnected fields: Medicine, Research, and Innovation. My clinical background provides a practical foundation, scientific inquiry helps me approach complex problems critically, and my education in healthcare management has expanded my perspective on how meaningful change can be achieved. I am currently working toward becoming a licensed physician in Canada. Looking ahead, I aspire to build a healthcare startup that addresses real-world challenges and helps make timely, high-quality healthcare more accessible, regardless of people's financial circumstances.</p>
+      <h2>{t("Clinical practice and community health", "طبابت بالینی و سلامت جامعه")}</h2>
+      <p>{t("As I moved from medical education into clinical practice, that curiosity developed into a broader sense of purpose. Practising medicine in underserved communities exposed me to the profound differences in health and well-being that can exist within the same society. I saw how access to healthcare, available resources, and socioeconomic circumstances can shape people's opportunities to live healthier lives.", "وقتی از تحصیل پزشکی وارد کار بالینی شدم، آن کنجکاوی به هدفی گسترده‌تر تبدیل شد. طبابت در جوامع کم‌برخوردار به من نشان داد که وضعیت سلامت و کیفیت زندگی افراد حتی در یک جامعه می‌تواند تفاوت‌های عمیقی داشته باشد. از نزدیک دیدم که دسترسی به خدمات سلامت، منابع موجود و شرایط اجتماعی و اقتصادی چگونه بر فرصت افراد برای داشتن زندگی سالم‌تر اثر می‌گذارد.")}</p>
+      <p>{t("These experiences changed the way I think about medicine. I came to see that improving health requires more than treating individual patients. It also means questioning how healthcare is organised, identifying gaps in access, and exploring solutions that can benefit entire communities.", "این تجربه‌ها نگاه من به پزشکی را تغییر داد. دریافتم که بهبود سلامت به درمان تک‌تک بیماران محدود نمی‌شود. باید در شیوهٔ سازمان‌دهی خدمات سلامت بازنگری کرد، کاستی‌های دسترسی را شناخت و راه‌حل‌هایی را بررسی کرد که به سود همهٔ اعضای جامعه باشد.")}</p>
+      <h2>{t("Medicine, Research, and Innovation", "پزشکی، پژوهش و نوآوری")}</h2>
+      <p>{t("Today, my interests bring together three interconnected fields: Medicine, Research, and Innovation. My clinical background provides a practical foundation, scientific inquiry helps me approach complex problems critically, and my education in healthcare management has expanded my perspective on how meaningful change can be achieved. I am currently working toward becoming a licensed physician in Canada. Looking ahead, I aspire to build a healthcare startup that addresses real-world challenges and helps make timely, high-quality healthcare more accessible, regardless of people's financial circumstances.", "امروز علایق من سه حوزهٔ به‌هم‌پیوسته را در بر می‌گیرد: پزشکی، پژوهش و نوآوری. تجربهٔ بالینی برایم پایه‌ای عملی فراهم کرده، پژوهش علمی به من کمک می‌کند مسائل پیچیده را نقادانه بررسی کنم و تحصیل در مدیریت سلامت دیدم را نسبت به راه‌های ایجاد تغییر مؤثر گسترده‌تر کرده است. اکنون در حال طی کردن مسیر دریافت پروانهٔ طبابت در کانادا هستم. در آینده می‌خواهم کسب‌وکاری نوپا در حوزهٔ سلامت راه‌اندازی کنم که به مسائل واقعی بپردازد و دسترسی به مراقبت به‌موقع و باکیفیت را برای همه، با هر توان مالی، آسان‌تر کند.")}</p>
       <div class="note">{profile.disclosure}</div>
-      <a class="textlink" href="/experience/">
-        Explore my education and experience <Icon name="arrow" size={17} />
+      <a class="textlink" href={route("/experience/")}>
+        {t("Explore my education and experience", "تحصیلات و سوابق من را ببینید")} <Icon name="arrow" size={17} />
       </a>
     </div>
   </div>

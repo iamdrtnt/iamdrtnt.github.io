@@ -2,7 +2,10 @@
 import "../styles/site.css";
 import displayFont from "@fontsource-variable/newsreader/files/newsreader-latin-wght-normal.woff2?url";
 import bodyFont from "@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2?url";
-import { profile, navigation } from "../data/profile";
+import { profile as approvedProfile } from "../data/profile";
+import { navigationFor, profileFor } from "../i18n/profile";
+import { englishPath, localeFromPath, locales, localPath, translator } from "../i18n/locales";
+import "../i18n/rtl.css";
 import Icon from "../components/Icon.astro";
 interface Props {
   title: string;
@@ -14,6 +17,8 @@ interface Props {
   date?: Date;
   image?: string;
   imageAlt?: string;
+  paired?: boolean;
+  fragments?: Record<string, string>;
 }
 const {
   title,
@@ -25,31 +30,49 @@ const {
   date,
   image = "/images/social-card.png",
   imageAlt,
+  paired = true,
+  fragments,
 } = Astro.props;
 const base = Astro.site!;
 const absolute = (path: string) => new URL(path, base).href;
 const path = Astro.url.pathname;
 const url = absolute(path);
-const home = path === "/";
+const locale = localeFromPath(path);
+const otherLocale = locale === "fa" ? "en" : "fa";
+const settings = locales[locale];
+const t = translator(locale);
+const profile = profileFor(locale);
+const route = (value: string) => localPath(value, locale);
+const sourcePath = englishPath(path);
+const home = sourcePath === "/";
+const englishSwitch = sourcePath === "/404/" ? "/404.html" : sourcePath;
+const rss = route("/rss.xml");
+const alternates = {
+  en: sourcePath,
+  fa: localPath(sourcePath, "fa"),
+};
+const homeLabel = t("Home", "خانه");
+const journalLabel = t("Journal", "مجله");
 const person = {
   "@type": "Person",
   "@id": absolute("/#person"),
   name: profile.name,
-  url: absolute("/about/"),
+  ...(locale === "fa" ? { alternateName: approvedProfile.name } : {}),
+  url: absolute(route("/about/")),
   sameAs: profile.profiles.map((p) => p.url),
   homeLocation: { "@type": "Place", name: profile.location },
 };
 const website = {
   "@type": "WebSite",
-  "@id": absolute("/#website"),
-  url: base.href,
+  "@id": absolute(route("/") + "#website"),
+  url: absolute(route("/")),
   name: profile.name,
-  inLanguage: "en-CA",
+  inLanguage: settings.lang,
 };
 const crumbs = [
-  { name: "Home", item: base.href },
+  { name: homeLabel, item: absolute(route("/")) },
   ...(type === "BlogPosting"
-    ? [{ name: "Journal", item: absolute("/blog/") }]
+    ? [{ name: journalLabel, item: absolute(route("/blog/")) }]
     : []),
   { name: label || title, item: url },
 ];
@@ -62,7 +85,7 @@ const graph = [
     url,
     name: title,
     description,
-    inLanguage: "en-CA",
+    inLanguage: settings.lang,
     isPartOf: { "@id": website["@id"] },
     ...(type === "ProfilePage" ? { mainEntity: { "@id": person["@id"] } } : {}),
     ...extraSchema,
@@ -83,7 +106,7 @@ const graph = [
 ---
 
 <!doctype html>
-<html lang="en-CA">
+<html lang={settings.lang} dir={settings.dir}>
   <head>
     <meta charset="utf-8" />
     <link
@@ -98,12 +121,20 @@ const graph = [
       as="font"
       type="font/woff2"
       crossorigin="anonymous"
-      href={bodyFont}
+      href={locale === "fa" ? "/fonts/vazirmatn-arabic.woff2" : bodyFont}
     />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={url} />
+    {paired && !noindex && (
+      <>
+        <link rel="alternate" hreflang={locales.en.lang} href={absolute(alternates.en)} />
+        <link rel="alternate" hreflang={locales.fa.lang} href={absolute(alternates.fa)} />
+        <link rel="alternate" hreflang="x-default" href={absolute(alternates.en)} />
+        <meta property="og:locale:alternate" content={locales[otherLocale].og} />
+      </>
+    )}
     {noindex && <meta name="robots" content="noindex, follow" />}
     <meta
       property="og:type"
@@ -112,7 +143,7 @@ const graph = [
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={url} />
-    <meta property="og:locale" content="en_CA" />
+    <meta property="og:locale" content={settings.og} />
     <meta property="og:site_name" content={profile.name} />
     <meta property="og:image" content={absolute(image)} />
     {imageAlt && <meta property="og:image:alt" content={imageAlt} />}
@@ -128,8 +159,8 @@ const graph = [
     <link
       rel="alternate"
       type="application/rss+xml"
-      title="Mohammadreza Norouzi’s blog"
-      href="/rss.xml"
+      title={t("Mohammadreza Norouzi’s blog", "مجلهٔ محمدرضا نوروزی")}
+      href={rss}
     />
     <script
       type="application/ld+json"
@@ -149,31 +180,38 @@ const graph = [
   </head>
   <body>
     <a class="skip" href="#main">
-      Skip to content
+      {t("Skip to content", "رفتن به محتوای اصلی")}
     </a>
     <header class="mast">
       <div class="wrap bar">
-        <a class="brand" href="/" aria-label="Mohammadreza Norouzi, home">
+        <a class="brand" href={route("/")} aria-label={t("Mohammadreza Norouzi, home", "محمدرضا نوروزی، خانه")}>
           <span class="monogram" aria-hidden="true">mn<span>.</span></span>
-          <span class="brand-name">Mohammadreza Norouzi</span>
+          <span class="brand-name">{profile.name}</span>
         </a>
-        <nav id="navigation" aria-label="Main navigation">
-          {navigation.map(([text, href]) => (
+        <nav id="navigation" aria-label={t("Main navigation", "ناوبری اصلی")}>
+          {navigationFor(locale).map(({ label, path: original, href }) => (
             <a
               href={href}
               aria-current={path === href ? "page" : undefined}
-              class:list={[path.startsWith(href) && href !== "/" && "ancestor", href === "/contact/" && "contact-nav"]}
+              class:list={[path.startsWith(href) && original !== "/" && "ancestor", original === "/contact/" && "contact-nav"]}
             >
-              {text}{href === "/contact/" && <Icon name="diagonal" size={13} />}
+              {label}{original === "/contact/" && <Icon name="diagonal" size={13} />}
             </a>
           ))}
         </nav>
         <div class="controls">
+          {paired && (
+            <div class="locale-switch" dir="ltr" role="group" aria-label={t("Language", "زبان")}>
+              <a href={englishSwitch} hreflang="en-CA" aria-label={t("English", "انگلیسی")} aria-current={locale === "en" ? "true" : undefined} data-base={englishSwitch} data-fragments={locale === "fa" && fragments ? JSON.stringify(fragments) : undefined}>EN</a>
+              <span aria-hidden="true">/</span>
+              <a href={alternates.fa} hreflang="fa-IR" aria-label={t("Persian", "فارسی")} aria-current={locale === "fa" ? "true" : undefined} data-base={alternates.fa} data-fragments={locale === "en" && fragments ? JSON.stringify(fragments) : undefined}>FA</a>
+            </div>
+          )}
           <button
             class="iconbtn theme"
-            aria-label="Dark theme"
+            aria-label={t("Dark theme", "پوستهٔ تیره")}
             aria-pressed="false"
-            title="Toggle dark theme"
+            title={t("Toggle dark theme", "تغییر پوستهٔ تیره")}
           >
             <span class="day">
               <Icon name="moon" />
@@ -186,7 +224,7 @@ const graph = [
             class="iconbtn menu"
             aria-expanded="false"
             aria-controls="navigation"
-            aria-label="Navigation menu"
+            aria-label={t("Navigation menu", "منوی ناوبری")}
           >
             <Icon name="menu" />
           </button>
@@ -199,19 +237,41 @@ const graph = [
     <footer>
       <div class="wrap footer-row">
         <div>
-          <a class="foot-name" href="/">
+          <a class="foot-name" href={route("/")}>
             {profile.name}
           </a>
-          <p>Vancouver, British Columbia, Canada</p>
+          <p>{profile.location}</p>
         </div>
         <div class="footer-links">
-          <a href="/cv/">Curriculum vitae</a>
-          <a href="/contact/">Contact</a>
-          <a href="/rss.xml">RSS feed</a>
+          <a href={route("/cv/")}>{t("Curriculum vitae", "رزومه")}</a>
+          <a href={route("/contact/")}>{t("Contact", "تماس")}</a>
+          <a href={rss}>{t("RSS feed", "خوراک RSS")}</a>
         </div>
       </div>
     </footer>
     <script>
+      const switchLinks = document.querySelectorAll<HTMLAnchorElement>(".locale-switch a");
+      const updateLanguageLinks = () => {
+        let fragment = "";
+        try {
+          fragment = decodeURIComponent(location.hash.slice(1));
+        } catch {
+          // An invalid escape cannot identify a section.
+        }
+        for (const link of switchLinks) {
+          const map: Record<string, string> | undefined = link.dataset.fragments
+            ? JSON.parse(link.dataset.fragments)
+            : undefined;
+          const matchingFragment = fragment && document.getElementById(fragment) ? fragment : "";
+          const target = map && matchingFragment
+            ? (Object.hasOwn(map, matchingFragment) ? map[matchingFragment] : "")
+            : matchingFragment;
+          link.href = link.dataset.base! + (target ? "#" + encodeURIComponent(target) : "");
+        }
+      };
+      updateLanguageLinks();
+      window.addEventListener("hashchange", updateLanguageLinks);
+
       const root = document.documentElement;
       const toggle = document.querySelector<HTMLButtonElement>(".theme")!;
       const pref = matchMedia("(prefers-color-scheme: dark)");

@@ -11,9 +11,7 @@ const cover = z.object({
   caption: z.string().optional(),
 });
 
-const blog = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/blog" }),
-  schema: z
+const articleSchema = z
     .object({
       title: z.string().trim().min(1),
       slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).optional(),
@@ -42,6 +40,14 @@ const blog = defineCollection({
         return z.NEVER;
       }
       return { ...data, publishDate, coverImage };
-    }),
+    });
+
+const blog = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/blog" }),
+  schema: articleSchema,
 });
-export const collections = { blog };
+const blogFa = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/blog-fa" }),
+  schema: articleSchema,
+});
+export const collections = { blog, blogFa };

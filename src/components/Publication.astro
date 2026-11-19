@@ -1,14 +1,17 @@
 ---
 import type { Publication } from "../data/profile";
+import { localeFromPath, numberLabel, translator } from "../i18n/locales";
 interface Props {
   record: Publication;
 }
 const { record: p } = Astro.props;
+const locale = localeFromPath(Astro.url.pathname);
+const t = translator(locale);
 ---
 
 <article class="record">
   <p class="kicker">
-    {p.type} · {p.year}
+    {p.type} · {numberLabel(p.year, locale)}
   </p>
   <h3>{p.title}</h3>
   <p>
@@ -16,8 +19,8 @@ const { record: p } = Astro.props;
   </p>
   {p.abstract && <p>{p.abstract}</p>}
   <div class="inline-links">
-    {p.doi && <a href={"https://doi.org/" + p.doi}>DOI {p.doi}</a>}
-    {p.url && <a href={p.url}>Publication record</a>}
-    {p.pubmed && <a href={p.pubmed}>PubMed record</a>}
+    {p.doi && <a href={"https://doi.org/" + p.doi}><bdi dir="ltr">DOI {p.doi}</bdi></a>}
+    {p.url && <a href={p.url}>{t("Publication record", "رکورد اثر علمی")}</a>}
+    {p.pubmed && <a href={p.pubmed}>{t("PubMed record", "رکورد در PubMed")}</a>}
   </div>
 </article>
