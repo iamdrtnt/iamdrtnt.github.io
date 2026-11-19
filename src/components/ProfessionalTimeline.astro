@@ -1,0 +1,110 @@
+---
+import { professionalTimeline } from "../data/profile";
+---
+
+<ol class="professional-timeline" role="list">
+  {professionalTimeline.map((stage) => (
+    <li class={stage.status}>
+      <p class="kicker">{stage.label}</p>
+      <h3>{stage.title}</h3>
+      {stage.place && <p class="place">{stage.place}</p>}
+      <p class="detail">{stage.detail}</p>
+      {stage.status === "future" && <span class="continuation" aria-hidden="true"></span>}
+    </li>
+  ))}
+</ol>
+
+<style>
+  .professional-timeline {
+    --steel: light-dark(#47627b, #aec2d5);
+    --marker-radius: 5px;
+    --marker-centre: 0.55rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    position: relative;
+    padding-inline-start: clamp(28px, 4vw, 48px);
+  }
+
+  li::before {
+    position: absolute;
+    z-index: 1;
+    inset-inline-start: 0;
+    top: calc(var(--marker-centre) - var(--marker-radius));
+    width: calc(2 * var(--marker-radius));
+    height: calc(2 * var(--marker-radius));
+    border: 1px solid var(--steel);
+    border-radius: 50%;
+    background: var(--steel);
+    content: "";
+  }
+
+  .completed {
+    padding-bottom: clamp(28px, 4vw, 49px);
+  }
+
+  .completed::after {
+    position: absolute;
+    inset-inline-start: calc(var(--marker-radius) - 0.5px);
+    top: var(--marker-centre);
+    width: 1px;
+    height: 100%;
+    background: color-mix(in srgb, var(--steel) 56%, var(--paper));
+    content: "";
+  }
+
+  .kicker {
+    color: var(--steel);
+    margin-bottom: 6px;
+  }
+
+  .professional-timeline h3 {
+    font-size: clamp(1.7rem, 2.7vw, 2.45rem);
+  }
+
+  .place {
+    font-size: 0.88rem;
+    margin: 6px 0 0;
+  }
+
+  .detail {
+    max-width: 61ch;
+    margin: 8px 0 0;
+  }
+
+  .future {
+    padding-bottom: 45px;
+  }
+
+  .future::before {
+    background: var(--paper);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--steel) 17%, transparent);
+  }
+
+  .continuation {
+    position: absolute;
+    inset-inline-start: calc(var(--marker-radius) - 1.5px);
+    top: calc(var(--marker-centre) + 9px);
+    bottom: 12px;
+    width: 3px;
+    color: var(--steel);
+    background: radial-gradient(circle closest-side, currentColor 92%, transparent) 0 0 / 3px 8px repeat-y;
+    mask-image: linear-gradient(to bottom, black, rgb(0 0 0 / 28%));
+  }
+
+  .future::after {
+    position: absolute;
+    inset-inline-start: calc(var(--marker-radius) - 3px);
+    bottom: 6px;
+    width: 6px;
+    height: 6px;
+    border-right: 1px solid var(--steel);
+    border-bottom: 1px solid var(--steel);
+    opacity: 0.48;
+    transform: rotate(45deg);
+    content: "";
+  }
+</style>

@@ -107,6 +107,29 @@ export const projects: { title: string; description: string; url?: string }[] =
   [];
 export const presentations: { title: string; meeting: string; year: number }[] =
   [];
+export const professionalTimeline = [
+  {
+    status: "completed",
+    label: "2023–2024",
+    place: "Fasa University of Medical Sciences, Iran",
+    title: "Clinical Internship",
+    detail: "Completed an 18-month clinical internship across major medical specialties, developing clinical assessment, reasoning, and multidisciplinary patient-care skills.",
+  },
+  {
+    status: "completed",
+    label: "2024–2026",
+    place: "Iran",
+    title: "General Physician",
+    detail: "Provided general medical care, including clinical assessment, diagnosis, management, preventive healthcare, and patient education.",
+  },
+  {
+    status: "future",
+    label: "The next chapter · Canada",
+    title: "Working Toward Medical Licensure",
+    detail: "Continuing my professional journey toward becoming a licensed physician in Canada.",
+  },
+];
+
 export const achievements: string[] = ["Fasa Startup Weekend (2018) — Originator of the startup idea and leader of the second-place team."];
 export const navigation = [
   ["Home", "/"],

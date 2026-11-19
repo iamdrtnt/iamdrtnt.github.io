@@ -2,6 +2,7 @@
 import Base from "../layouts/Base.astro";
 import PageHead from "../components/PageHead.astro";
 import Timeline from "../components/Timeline.astro";
+import ProfessionalTimeline from "../components/ProfessionalTimeline.astro";
 import { profile } from "../data/profile";
 ---
 
@@ -27,7 +28,7 @@ import { profile } from "../data/profile";
     </section>
     <section>
       <h2>Professional experience</h2>
-      <Timeline items={[...profile.experience, { title: "Certifications & Training", detail: profile.training.join(" · ") }, { title: "Fasa Startup Weekend | 2018", label: "Team Leader & Idea Originator — Second-Place Team", detail: "Developed the original startup idea and led the team that achieved second place at Fasa Startup Weekend." }]} />
+      <ProfessionalTimeline />
     </section>
     <p class="note">{profile.disclosure}</p>
   </div>
