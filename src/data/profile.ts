@@ -4,7 +4,7 @@ export const profile = {
   title: "International Medical Graduate | Research & Healthcare Innovation",
   introduction: "My perspective on medicine extends beyond individual patient care. I am driven by a commitment to improving healthcare systems through research, strategic thinking, and innovation, with the goal of making better care accessible to more people worldwide.",
   bio: "My journey into medicine began with a simple curiosity: understanding the human body, how it works, and how science can help improve human health.",
-  summary: "International medical graduate with experience in general medical practice, primary healthcare, and clinical decision-making. My professional interests bring together clinical medicine, evidence-based research, healthcare management, and innovation, with a particular focus on improving access to healthcare.",
+  summary: "International medical graduate who provided independent general medical care as a Most Responsible Physician in Iran, including preventive healthcare and patient education. My professional interests bring together clinical medicine, evidence-based research, healthcare management, and innovation, with a particular focus on improving access to healthcare.",
   disclosure: "Iranian MD graduate.",
   education: [
     {
@@ -20,20 +20,17 @@ export const profile = {
   ],
   experience: [
     {
-      "title": "General Medical Practice | 2024–2026",
-      "label": "Iran",
-      "detail": "Provided general medical care, conducted clinical assessments, and made diagnostic and management decisions across a range of patient presentations. Developed experience in clinical decision-making, patient-centred care, and working under demanding conditions."
+      title: "Clinical Internship",
+      date: "2023–2024",
+      place: "Fasa University of Medical Sciences, Iran",
+      detail: "Completed an 18-month clinical internship across major medical specialties, developing experience in clinical assessment, clinical reasoning, and multidisciplinary patient care.",
     },
     {
-      "title": "Primary Healthcare | 2024–2026",
-      "label": "Iran",
-      "detail": "Worked in community-based healthcare, with responsibilities involving preventive medicine, primary care, patient education, and coordination with other healthcare professionals."
+      title: "Most Responsible Physician",
+      date: "2024–2026",
+      place: "Iran",
+      detail: "Provided independent general medical care, including clinical assessment, diagnosis, management planning, preventive healthcare, and patient education.",
     },
-    {
-      "title": "Clinical Internship | 2023–2024",
-      "label": "Fasa University of Medical Sciences, Iran",
-      "detail": "Completed an 18-month clinical internship with rotations across major medical specialties, gaining practical experience in patient assessment, clinical reasoning, and multidisciplinary care."
-    }
   ],
   training: ["Good Clinical Practice (GCP)", "TCPS 2 CORE — Research Ethics", "Aesthetic Medicine Training — Botulinum Toxin & Dermal Fillers"],
   skills: ["Clinical Decision-Making", "Primary Healthcare", "Preventive Medicine", "Team Coordination"],
@@ -108,20 +105,11 @@ export const projects: { title: string; description: string; url?: string }[] =
 export const presentations: { title: string; meeting: string; year: number }[] =
   [];
 export const professionalTimeline = [
-  {
+  ...profile.experience.map((entry) => ({
+    ...entry,
     status: "completed",
-    label: "2023–2024",
-    place: "Fasa University of Medical Sciences, Iran",
-    title: "Clinical Internship",
-    detail: "Completed an 18-month clinical internship across major medical specialties, developing clinical assessment, reasoning, and multidisciplinary patient-care skills.",
-  },
-  {
-    status: "completed",
-    label: "2024–2026",
-    place: "Iran",
-    title: "General Physician",
-    detail: "Provided general medical care, including clinical assessment, diagnosis, management, preventive healthcare, and patient education.",
-  },
+    label: entry.date,
+  })),
   {
     status: "future",
     label: "The next chapter · Canada",
