@@ -20,6 +20,8 @@ export function startStudy(root: HTMLElement) {
     "(prefers-reduced-motion: no-preference) and (min-height: 651px), (prefers-reduced-motion: no-preference) and (min-width: 341px) and (min-height: 600px), (prefers-reduced-motion: no-preference) and (min-width: 721px) and (min-height: 525px)",
   );
   const last = chapters.length - 1;
+  const { scrollLabel, continueLabel, figurePrefix } = root.dataset;
+  const figureAt = (index: number) => `${figurePrefix} ${chapters[index].dataset.figureNumber}`;
   let generation = 0;
   let teardown: (() => void) | undefined;
 
@@ -74,8 +76,8 @@ export function startStudy(root: HTMLElement) {
           links[index].removeAttribute("aria-current");
         });
         next.hash = chapterIds[1];
-        nextLabel.textContent = "Scroll to explore";
-        figureNumber.textContent = "Fig. 01";
+        nextLabel.textContent = scrollLabel!;
+        figureNumber.textContent = figureAt(0);
         figureLabel.textContent = chapters[0].dataset.figure!;
         if (wasBelow)
           window.scrollBy(
@@ -105,8 +107,8 @@ export function startStudy(root: HTMLElement) {
           });
           next.hash = chapterIds[current + 1] ?? "portfolio";
           nextLabel.textContent =
-            current === last ? "Continue to portfolio" : "Scroll to explore";
-          figureNumber.textContent = `Fig. ${String(current + 1).padStart(2, "0")}`;
+            current === last ? continueLabel! : scrollLabel!;
+          figureNumber.textContent = figureAt(current);
           figureLabel.textContent = chapters[current].dataset.figure!;
         }
         chapters.forEach((chapter, i) => {

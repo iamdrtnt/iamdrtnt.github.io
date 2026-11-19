@@ -1,25 +1,27 @@
 ---
-import type { CollectionEntry } from "astro:content";
-import { articleUrl, dateLabel, readingTime } from "../lib/articles";
+import { articleUrl, dateLabel, readingLabel, type Article } from "../lib/articles";
+import { localeFromPath } from "../i18n/locales";
+import { categoryLabel } from "../i18n/categories";
 import Icon from "./Icon.astro";
 interface Props {
-  post: CollectionEntry<"blog">;
+  post: Article;
 }
 const { post } = Astro.props;
+const locale = localeFromPath(Astro.url.pathname);
 ---
 
 <article class="article-card" data-category={post.data.category}>
-  <p class="kicker">{post.data.category}</p>
+  <p class="kicker">{categoryLabel(post.data.category, locale)}</p>
   <h3>
-    <a href={articleUrl(post.id)}>{post.data.title}</a>
+    <a href={articleUrl(post.id, locale)}>{post.data.title}</a>
   </h3>
   <p>{post.data.description}</p>
   <div class="card-bottom">
     <span>
       <time datetime={post.data.publishDate.toISOString()}>
-        {dateLabel(post.data.publishDate)}
+        {dateLabel(post.data.publishDate, locale)}
       </time>{" "}
-      · {readingTime(post)} min read
+      · {readingLabel(post, locale)}
     </span>
     <Icon name="arrow" size={18} />
   </div>

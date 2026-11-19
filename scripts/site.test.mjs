@@ -4,6 +4,7 @@ import { readdirSync, readFileSync, existsSync, statSync } from "node:fs";
 import path from "node:path";
 import { load } from "cheerio";
 import config from "../astro.config.mjs";
+import { profile } from "../src/data/profile.ts";
 import { createStethoscope } from "../src/lib/stethoscope/model.ts";
 
 const root = path.resolve("dist");
@@ -27,17 +28,24 @@ const documents = pages.map((file) => ({
 const indexable = documents.filter(
   ({ $ }) => !$('meta[name="robots"]').attr("content")?.includes("noindex"),
 );
+const persian = /\p{Script=Arabic}/u;
+const isPersian = (pathname) => pathname.startsWith("/fa/");
 const titles = new Set(),
   descriptions = new Set();
-test("every public document has English metadata, an accessible outline, and valid structured data", () => {
+test("every public document has localised metadata, an accessible outline, and valid structured data", () => {
   assert.ok(indexable.length >= 7);
   for (const { $, pathname } of documents) {
-    assert.equal($("html").attr("lang"), "en-CA", pathname);
+    const fa = isPersian(pathname);
+    const language = fa ? "fa-IR" : "en-CA";
+    const name = fa ? "محمدرضا نوروزی" : "Mohammadreza Norouzi";
+    assert.equal($("html").attr("lang"), language, pathname);
+    assert.equal($("html").attr("dir"), fa ? "rtl" : "ltr", pathname);
     assert.equal($("main h1").length, 1, pathname);
     assert.equal($("main").length, 1, pathname);
-    assert.ok($("title").text().includes("Mohammadreza Norouzi"));
+    assert.ok($("title").text().includes(name));
     const description = $('meta[name="description"]').attr("content");
     assert.ok(description?.length > 30);
+    if (fa) assert.match(description, persian);
     assert.ok(!titles.has($("title").text()), pathname);
     assert.ok(!descriptions.has(description), pathname);
     titles.add($("title").text());
@@ -47,15 +55,23 @@ test("every public document has English metadata, an accessible outline, and val
       assert.equal($('link[rel="canonical"]').attr("href"), origin + pathname);
     for (const tag of ["og:title", "og:url", "og:description", "og:image"])
       assert.ok($('meta[property="' + tag + '"]').attr("content"));
+    assert.equal($('meta[property="og:locale"]').attr("content"), language.replace("-", "_"));
+    assert.equal($('meta[property="og:title"]').attr("content"), $("title").text());
+    assert.equal($('meta[property="og:description"]').attr("content"), description);
+    assert.equal($('meta[property="og:url"]').attr("content"), $('link[rel="canonical"]').attr("href"));
     assert.ok($('meta[name="twitter:card"]').attr("content"));
     const schema = JSON.parse($('script[type="application/ld+json"]').text());
     assert.equal(schema["@context"], "https://schema.org");
     assert.ok(
       schema["@graph"].some(
         (node) =>
-          node["@type"] === "Person" && node.name === "Mohammadreza Norouzi",
+          node["@type"] === "Person" && node.name === name && node["@id"] === origin + "/#person",
       ),
     );
+    const webpage = schema["@graph"].find((node) => node["@id"]?.endsWith("#page"));
+    assert.equal(webpage?.inLanguage, language);
+    assert.equal(webpage?.url, $('link[rel="canonical"]').attr("href"));
+    assert.equal(webpage?.description, description);
     $("img").each((_, image) => {
       assert.ok($(image).attr("alt")?.trim(), pathname);
       assert.ok(
@@ -66,8 +82,14 @@ test("every public document has English metadata, an accessible outline, and val
     const visible = $("body").clone();
     visible.find("script,style").remove();
     const words = visible.text() + description + JSON.stringify(schema);
-    for (const letter of words.match(/\p{L}/gu) || [])
-      assert.match(letter, /\p{Script=Latin}/u, pathname);
+    if (fa) {
+      assert.match($("main h1").text(), persian, pathname);
+      assert.ok(visible.find("main").text().match(/\p{Script=Arabic}/gu)?.length > (pathname === "/fa/404/" ? 40 : 70), pathname);
+      assert.ok($('link[as="font"][href="/fonts/vazirmatn-arabic.woff2"]').length);
+    } else {
+      for (const letter of words.match(/\p{L}/gu) || [])
+        assert.match(letter, /\p{Script=Latin}/u, pathname);
+    }
   }
 });
 test("local links, fragments, scripts, styles, images and share cards resolve", () => {
@@ -197,53 +219,185 @@ test("the sitemap, robots, and RSS match the indexable pages and published artic
       "Sitemap: " + origin + "/sitemap.xml",
     ),
   );
-  const rss = load(readFileSync(path.join(root, "rss.xml"), "utf8"), {
-    xmlMode: true,
-  });
-  const posts = indexable.filter(
-    (p) => p.pathname.startsWith("/blog/") && p.pathname !== "/blog/",
-  );
-  assert.deepEqual(
-    rss("item > link")
-      .map((_, e) => rss(e).text())
-      .get()
-      .sort(),
-    posts.map((p) => origin + p.pathname).sort(),
-  );
-  posts.forEach(({ $ }) =>
-    assert.ok(
-      JSON.parse($('script[type="application/ld+json"]').text())["@graph"].some(
-        (n) => n["@type"] === "BlogPosting",
+  for (const prefix of ["", "/fa"]) {
+    const rss = load(readFileSync(path.join(root, prefix, "rss.xml"), "utf8"), {
+      xmlMode: true,
+    });
+    const posts = indexable.filter(
+      (p) => p.pathname.startsWith(prefix + "/blog/") && p.pathname !== prefix + "/blog/",
+    );
+    assert.deepEqual(
+      rss("item > link")
+        .map((_, e) => rss(e).text())
+        .get()
+        .sort(),
+      posts.map((p) => origin + p.pathname).sort(),
+    );
+    assert.equal(rss("channel > language").text(), prefix ? "fa-ir" : "en-ca");
+    for (const entry of rss("item").toArray()) {
+      assert.equal(persian.test(rss(entry).find("title").text()), Boolean(prefix));
+      assert.equal(persian.test(rss(entry).find("description").text()), Boolean(prefix));
+    }
+    posts.forEach(({ $ }) =>
+      assert.ok(
+        JSON.parse($('script[type="application/ld+json"]').text())["@graph"].some(
+          (n) => n["@type"] === "BlogPosting",
+        ),
       ),
-    ),
-  );
+    );
+  }
 });
 
 test("Journal covers carry through to the archive and article metadata", () => {
-  const archive = documents.find(({ pathname }) => pathname === "/blog/");
-  const entries = archive.$(".journal-entry").toArray();
-  const posts = indexable.filter(({ pathname }) => pathname.startsWith("/blog/") && pathname !== "/blog/");
-  assert.deepEqual(
-    entries.map((entry) => archive.$(entry).find("h3 a").attr("href")).sort(),
-    posts.map(({ pathname }) => pathname).sort(),
-  );
-  for (const { $, pathname } of posts) {
-    const image = $(".journal-article-figure img");
-    if (!image.length) continue;
+  for (const prefix of ["", "/fa"]) {
+    const archive = documents.find(({ pathname }) => pathname === prefix + "/blog/");
+    const entries = archive.$(".journal-entry").toArray();
+    const posts = indexable.filter(({ pathname }) => pathname.startsWith(prefix + "/blog/") && pathname !== prefix + "/blog/");
+    assert.deepEqual(
+      entries.map((entry) => archive.$(entry).find("h3 a").attr("href")).sort(),
+      posts.map(({ pathname }) => pathname).sort(),
+    );
+    for (const { $, pathname } of posts) {
+      const image = $(".journal-article-figure img");
+      if (!image.length) continue;
 
-    const src = image.attr("src");
-    const alt = image.attr("alt");
-    const entry = entries.find((item) => archive.$(item).find("h3 a").attr("href") === pathname);
-    const shareImage = new URL(src, origin).href;
-    const schema = JSON.parse($('script[type="application/ld+json"]').text());
-    const article = schema["@graph"].find((node) => node["@type"] === "BlogPosting");
+      const src = image.attr("src");
+      const alt = image.attr("alt");
+      const entry = entries.find((item) => archive.$(item).find("h3 a").attr("href") === pathname);
+      const shareImage = new URL(src, origin).href;
+      const schema = JSON.parse($('script[type="application/ld+json"]').text());
+      const article = schema["@graph"].find((node) => node["@type"] === "BlogPosting");
 
-    assert.equal(archive.$(entry).find("img").attr("src"), src, pathname);
-    assert.equal(archive.$(entry).find("img").attr("alt"), alt, pathname);
-    assert.equal($('meta[property="og:image"]').attr("content"), shareImage, pathname);
-    assert.equal($('meta[property="og:image:alt"]').attr("content"), alt, pathname);
-    assert.equal($('meta[name="twitter:image"]').attr("content"), shareImage, pathname);
-    assert.equal($('meta[name="twitter:image:alt"]').attr("content"), alt, pathname);
-    assert.equal(article.image, shareImage, pathname);
+      assert.equal(archive.$(entry).find("img").attr("src"), src, pathname);
+      assert.equal(archive.$(entry).find("img").attr("alt"), alt, pathname);
+      assert.equal($('meta[property="og:image"]').attr("content"), shareImage, pathname);
+      assert.equal($('meta[property="og:image:alt"]').attr("content"), alt, pathname);
+      assert.equal($('meta[name="twitter:image"]').attr("content"), shareImage, pathname);
+      assert.equal($('meta[name="twitter:image:alt"]').attr("content"), alt, pathname);
+      assert.equal(article.image, shareImage, pathname);
+    }
+  }
+});
+
+const originalRoutes = [
+  "/", "/about/", "/experience/", "/research/", "/blog/", "/cv/", "/contact/",
+  "/blog/ai-in-primary-care-patient-safety/",
+  "/blog/reading-a-clinical-trial/",
+  "/blog/turning-a-clinical-observation-into-a-question/",
+  "/blog/where-a-medical-ai-model-is-tested/",
+];
+const byPath = new Map(documents.map((page) => [page.pathname, page]));
+
+test("original routes and their Persian counterparts have reciprocal alternates and real switch links", () => {
+  for (const path of originalRoutes) assert.ok(byPath.has(path), path);
+  assert.ok(byPath.has("/404.html"));
+  assert.ok(byPath.has("/fa/404/"));
+  assert.equal(byPath.get("/404.html").$('.locale-switch [hreflang="fa-IR"]').attr("href"), "/fa/404/");
+  assert.equal(byPath.get("/fa/404/").$('.locale-switch [hreflang="en-CA"]').attr("href"), "/404.html");
+
+  for (const { $, pathname } of indexable) {
+    const fa = isPersian(pathname);
+    const english = fa ? pathname.slice(3) : pathname;
+    const farsi = "/fa" + english;
+    assert.ok(byPath.has(english) && byPath.has(farsi), pathname);
+    assert.equal($('link[hreflang="en-CA"]').attr("href"), origin + english);
+    assert.equal($('link[hreflang="fa-IR"]').attr("href"), origin + farsi);
+    assert.equal($('link[hreflang="x-default"]').attr("href"), origin + english);
+    assert.equal($('.locale-switch a[hreflang="en-CA"]').attr("href"), english);
+    assert.equal($('.locale-switch a[hreflang="fa-IR"]').attr("href"), farsi);
+    assert.equal($(".locale-switch a[aria-current]").attr("hreflang"), fa ? "fa-IR" : "en-CA");
+    assert.equal($('meta[property="og:locale:alternate"]').attr("content"), fa ? "en_CA" : "fa_IR");
+
+    $("main a, #navigation a, footer a").each((_, el) => {
+      const href = $(el).attr("href");
+      if (href?.startsWith("/") && !href.startsWith("//") && !$(el).attr("download")) {
+        assert.equal(isPersian(href), fa, pathname + " → " + href);
+      }
+    });
+  }
+});
+
+test("published Persian articles carry complete bodies, equivalent sections, and the original references", () => {
+  const externalLinks = ($) => $(".journal-body a").map((_, el) =>
+    $(el).attr("href")?.startsWith("https://") ? $(el).attr("href") : null,
+  ).get();
+  for (const { $, pathname } of indexable.filter(({ pathname }) => pathname.startsWith("/fa/blog/") && pathname !== "/fa/blog/")) {
+    const en = byPath.get(pathname.slice(3)).$;
+    assert.equal($(".journal-byline time").attr("datetime"), en(".journal-byline time").attr("datetime"));
+    assert.match($(".journal-byline time").text(), persian);
+    assert.match($(".journal-byline").text(), /[۰-۹]+ دقیقه مطالعه/u);
+    assert.ok($(".journal-takeaways li").length >= 2);
+    assert.match($(".journal-tags").text(), persian);
+    assert.match($(".journal-article-figure img").attr("alt"), persian);
+    assert.equal($(".journal-article-figure img").attr("src"), en(".journal-article-figure img").attr("src"));
+    assert.deepEqual(externalLinks($), externalLinks(en));
+    assert.equal($(".journal-body p").length, en(".journal-body p").length);
+    for (const paragraph of $(".journal-body p").toArray()) {
+      const text = $(paragraph).text().replace(/[^\p{L}]/gu, "");
+      assert.ok((text.match(/\p{Script=Arabic}/gu)?.length || 0) / text.length > 0.7, pathname);
+    }
+    const headings = ($) => $(".journal-body :is(h2,h3,h4,h5,h6)").toArray();
+    assert.deepEqual(headings($).map((el) => el.name), headings(en).map((el) => el.name));
+    const fragments = JSON.parse($('.locale-switch a[hreflang="en-CA"]').attr("data-fragments"));
+    const reverse = JSON.parse(en('.locale-switch a[hreflang="fa-IR"]').attr("data-fragments"));
+    for (const el of headings($)) {
+      const id = $(el).attr("id");
+      assert.match($(el).text(), persian);
+      assert.equal(reverse[fragments[id]], id);
+      assert.ok(en("[id]").toArray().some((target) => target.attribs.id === fragments[id]));
+    }
+  }
+});
+
+test("draft manuscripts stay out of both route trees, feeds and the sitemap", () => {
+  for (const [collection, prefix] of [["blog", ""], ["blog-fa", "/fa"]]) {
+    const feed = readFileSync(path.join(root, prefix, "rss.xml"), "utf8");
+    const sitemap = readFileSync(path.join(root, "sitemap.xml"), "utf8");
+    for (const file of visit(path.resolve("src/content", collection)).filter((v) => v.endsWith(".md"))) {
+      const frontmatter = readFileSync(file, "utf8").split(/^---\s*$/m)[1] ?? "";
+      if (!/^draft:\s*true\b/m.test(frontmatter)) continue;
+      const slug = frontmatter.match(/^slug:\s*["']?([\w-]+)["']?/m)?.[1] ?? path.basename(file, ".md");
+      const route = prefix + "/blog/" + slug + "/";
+      assert.ok(!byPath.has(route), route);
+      assert.ok(!feed.includes(origin + route), route);
+      assert.ok(!sitemap.includes(origin + route), route);
+    }
+  }
+});
+
+test("Persian chapters preserve the instrument and the professional timeline preserves its two stages", () => {
+  const en = byPath.get("/").$;
+  const fa = byPath.get("/fa/").$;
+  const chapters = ($) => $("[data-chapter]").toArray();
+  assert.deepEqual(chapters(fa).map((el) => el.attribs.id), chapters(en).map((el) => el.attribs.id));
+  assert.equal(fa("[data-instrument]").length, 1);
+  assert.equal(fa(".study-poster").attr("src"), en(".study-poster").attr("src"));
+  assert.match(fa(".study-poster").attr("alt"), persian);
+  assert.match(fa("[data-study]").attr("data-scroll-label"), persian);
+  for (const chapter of chapters(fa)) {
+    assert.match(fa(chapter).find("h1,h2").text(), persian);
+    assert.match(fa(chapter).find(".study-identity,.study-description").text(), persian);
+    assert.match(chapter.attribs["data-figure"], persian);
+  }
+
+  for (const prefix of ["", "/fa"]) {
+    const exp = byPath.get(prefix + "/experience/").$;
+    assert.equal(exp(".professional-timeline .completed").length, 2);
+    assert.equal(exp(".professional-timeline .future .continuation").length, 1);
+    assert.deepEqual(exp(".professional-timeline h3").map((_, el) => exp(el).text()).get(),
+      prefix
+        ? ["کارورزی بالینی", "پزشک مسئول اصلی", "در مسیر دریافت پروانهٔ پزشکی در کانادا"]
+        : ["Clinical Internship", "Most Responsible Physician", "Working Toward Medical Licensure"],
+    );
+    assert.match(exp(".professional-timeline .future .detail").text(),
+      prefix ? /در حال طی کردن مراحل/u : /toward becoming/u);
+    const cv = byPath.get(prefix + "/cv/").$;
+    const download = cv(".cv-download a[download]");
+    assert.equal(download.length, Number(Boolean(profile.cvPath)));
+    if (profile.cvPath) {
+      assert.equal(download.attr("href"), profile.cvPath);
+      if (prefix) assert.match(download.text(), /به زبان انگلیسی/u);
+    }
+    assert.equal(cv("main").text().match(prefix ? /۲۰۲۴–۲۰۲۶/g : /2024–2026/g)?.length, 1);
   }
 });

@@ -1,21 +1,32 @@
 ---
 import Base from "../layouts/Base.astro";
 import PageHead from "../components/PageHead.astro";
+import { localeFromPath, translator, localPath } from "../i18n/locales";
+
+const locale = localeFromPath(Astro.url.pathname);
+const t = translator(locale);
+const route = (path: string) => localPath(path, locale);
 ---
 
 <Base
-  title="Page Not Found | Mohammadreza Norouzi"
-  description="The page could not be found. Return to Mohammadreza Norouzi’s academic portfolio."
+  title={t("Page Not Found | Mohammadreza Norouzi", "صفحه پیدا نشد | محمدرضا نوروزی")}
+  description={t("The page could not be found. Return to Mohammadreza Norouzi’s academic portfolio.", "صفحهٔ درخواستی پیدا نشد. به صفحهٔ اصلی وب‌سایت حرفه‌ای محمدرضا نوروزی بازگردید.")}
   noindex
 >
+  {locale === "en" && (
+    <script is:inline>
+      // GitHub Pages delivers this root error document for missing paths.
+      if (/^\/fa(?:\/|$)/.test(location.pathname)) location.replace("/fa/404/");
+    </script>
+  )}
   <PageHead
-    parent="Error 404"
-    title="Page not found"
-    description="This address may have changed."
+    parent={t("Error 404", "خطای ۴۰۴")}
+    title={t("Page not found", "صفحه پیدا نشد")}
+    description={t("This address may have changed.", "ممکن است نشانی این صفحه تغییر کرده باشد.")}
   />
   <div class="wrap section">
-    <a class="button primary" href="/">
-      Return to the homepage
+    <a class="button primary" href={route("/")}>
+      {t("Return to the homepage", "بازگشت به صفحهٔ اصلی")}
     </a>
   </div>
 </Base>

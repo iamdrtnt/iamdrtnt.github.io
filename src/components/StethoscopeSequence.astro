@@ -1,57 +1,65 @@
 ---
 import Icon from "./Icon.astro";
 import "../styles/stethoscope.css";
+import { localeFromPath, localPath, numberLabel, translator } from "../i18n/locales";
+
+const locale = localeFromPath(Astro.url.pathname);
+const t = translator(locale);
+const scrollLabel = t("Scroll to explore", "برای دیدن فصل‌ها پیمایش کنید");
+const continueLabel = t("Continue to portfolio", "رفتن به سوابق حرفه‌ای");
+const figurePrefix = t("Fig.", "شکل");
 
 const chapters = [
-  { id: "introduction", label: "Introduction", figure: "Acoustic stethoscope" },
+  { id: "introduction", label: t("Introduction", "مقدمه"), figure: t("Acoustic stethoscope", "گوشی پزشکی آکوستیک") },
   {
     id: "medicine",
-    label: "Medicine",
-    figure: "Chestpiece & diaphragm",
-    first: "Where Knowledge",
-    last: "Meets Responsibility.",
+    label: t("Medicine", "پزشکی"),
+    figure: t("Chestpiece & diaphragm", "سری گوشی و دیافراگم"),
+    first: t("Where Knowledge", "جایی که دانش"),
+    last: t("Meets Responsibility.", "با مسئولیت همراه می‌شود."),
     detail:
-      "My journey in medicine has been shaped by frontline clinical practice, where critical thinking, sound judgment, and decisive action are essential.",
+      t("My journey in medicine has been shaped by frontline clinical practice, where critical thinking, sound judgment, and decisive action are essential.", "مسیر من در پزشکی با کار در خط مقدم مراقبت بالینی شکل گرفته است؛ جایی که تفکر نقادانه، قضاوت سنجیده و اقدام قاطع ضروری‌اند."),
     link: "/experience/",
-    action: "Clinical experience",
+    action: t("Clinical experience", "تجربهٔ بالینی"),
   },
   {
     id: "research-study",
-    label: "Research",
-    figure: "Acoustic pathway",
-    first: "Driven by Curiosity.",
-    last: "Guided by Evidence.",
+    label: t("Research", "پژوهش"),
+    figure: t("Acoustic pathway", "مسیر انتقال صدا"),
+    first: t("Driven by Curiosity.", "با انگیزهٔ کنجکاوی،"),
+    last: t("Guided by Evidence.", "با راهنمایی شواهد."),
     detail:
-      "My clinical background has strengthened my interest in connecting real-world healthcare challenges with rigorous research and evidence-based solutions.",
+      t("My clinical background has strengthened my interest in connecting real-world healthcare challenges with rigorous research and evidence-based solutions.", "تجربهٔ بالینی علاقه‌ام را به پیوند دادن مسائل واقعی سلامت با پژوهش دقیق و راه‌حل‌های مبتنی بر شواهد پررنگ‌تر کرده است."),
     link: "/research/#publications",
-    action: "Research & publications",
+    action: t("Research & publications", "پژوهش و آثار علمی"),
   },
   {
     id: "innovation",
-    label: "Innovation",
-    figure: "Binaural assembly",
-    first: "Rethinking Healthcare.",
-    last: "Expanding Access.",
+    label: t("Innovation", "نوآوری"),
+    figure: t("Binaural assembly", "مجموعهٔ لوله‌های دوگوشی"),
+    first: t("Rethinking Healthcare.", "بازنگری در شیوهٔ مراقبت،"),
+    last: t("Expanding Access.", "گسترش دسترسی."),
     detail:
-      "I believe that access to timely, high-quality healthcare should not depend on a person's financial circumstances.",
+      t("I believe that access to timely, high-quality healthcare should not depend on a person's financial circumstances.", "به باور من دسترسی به مراقبت به‌موقع و باکیفیت نباید به توان مالی افراد وابسته باشد."),
     link: "/research/#healthcare-innovation",
-    action: "Healthcare innovation",
+    action: t("Healthcare innovation", "نوآوری در سلامت"),
   },
   {
     id: "resolution",
-    label: "Resolution",
-    figure: "Assembled instrument",
-    first: "Explore the",
-    last: "Portfolio.",
+    label: t("Resolution", "جمع‌بندی"),
+    figure: t("Assembled instrument", "گوشی پزشکی کامل"),
+    first: t("Explore the", "مروری بر"),
+    last: t("Portfolio.", "سوابق حرفه‌ای"),
     detail:
-      "Explore my clinical background, research interests, and essays on reading and applying medical evidence.",
+      t("Explore my clinical background, research interests, and essays on reading and applying medical evidence.", "با پیشینهٔ بالینی و علایق پژوهشی من آشنا شوید و نوشته‌هایم دربارهٔ خواندن و به‌کارگیری شواهد پزشکی را بخوانید."),
     link: "/blog/",
-    action: "Read the journal",
+    action: t("Read the journal", "مطالعهٔ مجله"),
   },
 ];
+const figureNumbers = chapters.map((_, i) => numberLabel(i + 1, locale, 2));
 ---
 
-<section class="study" data-study aria-label="A stethoscope in five chapters">
+<section class="study" data-study data-scroll-label={scrollLabel} data-continue-label={continueLabel} data-figure-prefix={figurePrefix} aria-label={t("A stethoscope in five chapters", "یک گوشی پزشکی در پنج فصل")}>
   <div class="study-stops" aria-hidden="true"></div>
   <div class="study-shell">
     <div class="study-arrangement wrap">
@@ -63,26 +71,27 @@ const chapters = [
               id={chapter.id}
               data-chapter
               data-figure={chapter.figure}
+              data-figure-number={figureNumbers[i]}
               aria-labelledby={`${chapter.id}-title`}
             >
               {i === 0 ? (
                 <>
                   <p class="study-kicker">
-                    <Icon name="brain" size={27} /> From Clinical Practice to New Perspectives
+                    <Icon name="brain" size={27} /> {t("From Clinical Practice to New Perspectives", "از طبابت بالینی تا دیدگاه‌های تازه")}
                   </p>
                   <h1 class="study-name" id={`${chapter.id}-title`}>
-                    Mohammadreza <em>Norouzi</em>
+                    {t("Mohammadreza", "محمدرضا")} <em>{t("Norouzi", "نوروزی")}</em>
                   </h1>
                   <p class="study-identity">
-                    <span>International Medical Graduate</span> <b>|</b>{" "}
-                    <span>Research &amp; Healthcare Innovation</span>
+                    <span>{t("International Medical Graduate", "دانش‌آموختهٔ بین‌المللی پزشکی")}</span> <b>|</b>{" "}
+                    <span>{t("Research & Healthcare Innovation", "پژوهش و نوآوری در سلامت")}</span>
                   </p>
                   <div class="study-actions">
                     <a class="study-button" href="#portfolio">
-                      Explore portfolio <Icon name="arrow" size={16} />
+                      {t("Explore portfolio", "مرور سوابق حرفه‌ای")} <Icon name="arrow" size={16} />
                     </a>
-                    <a class="study-link" href="/about/">
-                      About me <Icon name="diagonal" size={14} />
+                    <a class="study-link" href={localPath("/about/", locale)}>
+                      {t("About me", "دربارهٔ من")} <Icon name="diagonal" size={14} />
                     </a>
                   </div>
                 </>
@@ -100,12 +109,12 @@ const chapters = [
                   </h2>
                   <p class="study-description">{chapter.detail}</p>
                   <div class="study-actions">
-                    <a class="study-link" href={chapter.link}>
+                    <a class="study-link" href={chapter.link && localPath(chapter.link, locale)}>
                       {chapter.action} <Icon name="diagonal" size={15} />
                     </a>
                     {i === 4 && (
                       <a class="study-link" href="#portfolio">
-                        Continue to portfolio <Icon name="arrow" size={15} />
+                        {continueLabel} <Icon name="arrow" size={15} />
                       </a>
                     )}
                   </div>
@@ -122,13 +131,13 @@ const chapters = [
             src="/images/stethoscope.webp"
             width="1200"
             height="1000"
-            alt="A silver and graphite acoustic stethoscope, with a round diaphragm, flexible tubing, and paired metal ear tubes."
+            alt={t("A silver and graphite acoustic stethoscope, with a round diaphragm, flexible tubing, and paired metal ear tubes.", "گوشی پزشکی آکوستیک به رنگ نقره‌ای و خاکستری تیره، با دیافراگم گرد، لولهٔ انعطاف‌پذیر و دو لولهٔ فلزی گوش.")}
             fetchpriority="high"
           />
           <canvas data-instrument aria-hidden="true"></canvas>
         </div>
         <figcaption class="study-caption">
-          <span class="study-fig-number" data-figure-no>Fig. 01</span><span
+          <span class="study-fig-number" data-figure-no>{figurePrefix} {figureNumbers[0]}</span><span
             class="study-caption-rule"
             aria-hidden="true"></span><span data-figure-label
             >{chapters[0].figure}</span
@@ -139,15 +148,15 @@ const chapters = [
     <div class="study-footer wrap">
       <a class="study-next" href="#medicine"
         ><span aria-hidden="true">↓</span><span data-next-label
-          >Scroll to explore</span
+          >{scrollLabel}</span
         ></a
       >
-      <nav class="study-nav" aria-label="Study chapters">
+      <nav class="study-nav" aria-label={t("Study chapters", "فصل‌ها")}>
         {
           chapters.map((chapter, i) => (
             <a href={`#${chapter.id}`}>
               <span class="study-step-number" aria-hidden="true">
-                {String(i + 1).padStart(2, "0")}
+                {figureNumbers[i]}
               </span>
               {chapter.label}
             </a>

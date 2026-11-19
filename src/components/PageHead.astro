@@ -1,10 +1,13 @@
 ---
+import { localeFromPath, translator } from "../i18n/locales";
+
 interface Props {
   title: string;
   description: string;
   parent?: string;
 }
-const { title, description, parent = "Academic portfolio" } = Astro.props;
+const t = translator(localeFromPath(Astro.url.pathname));
+const { title, description, parent = t("Academic portfolio", "سوابق علمی و حرفه‌ای") } = Astro.props;
 ---
 
 <div class="page-head">

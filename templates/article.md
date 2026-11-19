@@ -1,5 +1,6 @@
 ---
 title: "[Article headline in English]"
+# Pair with templates/article.fa.md using the same filename or explicit slug.
 # slug: descriptive-english-slug
 description: "[A short dek describing what the reader will learn.]"
 publishDate: 2026-01-01 # Replace with the intended publication date.

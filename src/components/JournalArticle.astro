@@ -1,0 +1,191 @@
+---
+import { render } from "astro:content";
+import Base from "../layouts/Base.astro";
+import Icon from "./Icon.astro";
+import JournalCover from "./JournalCover.astro";
+import JournalEntry from "./JournalEntry.astro";
+import { profileFor } from "../i18n/profile";
+import { localeFromPath, localPath, translator } from "../i18n/locales";
+import { categoryLabel } from "../i18n/categories";
+import { articleUrl, dateLabel, readingLabel, type Article } from "../lib/articles";
+import "../styles/journal.css";
+
+interface Props {
+  post: Article;
+  posts: Article[];
+  index: number;
+  translation?: Article;
+}
+
+const { post, posts, index, translation } = Astro.props;
+const locale = localeFromPath(Astro.url.pathname);
+const t = translator(locale);
+const profile = profileFor(locale);
+const { Content, headings } = await render(post);
+const translatedHeadings = translation ? (await render(translation)).headings : [];
+// The paired manuscripts keep the same heading sequence, including subsections.
+const fragments: Record<string, string> = Object.fromEntries([
+  ...[
+    "main",
+    "journal-related-heading",
+    "journal-copy-status",
+    ...(translation?.data.takeaways.length ? ["journal-takeaways-heading"] : []),
+  ].map(
+    (id) => [id, id],
+  ),
+  ...headings.flatMap((heading, index) => translatedHeadings[index]?.depth === heading.depth
+    ? [[heading.slug, translatedHeadings[index].slug]]
+    : []),
+]);
+const p = post.data;
+const category = categoryLabel(p.category, locale);
+const url = new URL(articleUrl(post.id, locale), Astro.site).href;
+const newer = posts[index - 1];
+const older = posts[index + 1];
+const related = posts
+  .filter(({ id }) => id !== post.id && id !== newer?.id && id !== older?.id)
+  .map((entry) => ({
+    entry,
+    sharedCategory: Number(entry.data.category === p.category),
+    sharedTags: entry.data.tags.filter((tag) => p.tags.includes(tag)).length,
+  }))
+  .filter(({ sharedCategory, sharedTags }) => sharedCategory || sharedTags)
+  .sort((a, b) => b.sharedCategory - a.sharedCategory || b.sharedTags - a.sharedTags)
+  .slice(0, 2);
+const sections = headings.filter((h) => h.depth === 2);
+const schema = {
+  headline: p.title,
+  author: { "@id": new URL("/#person", Astro.site).href },
+  datePublished: p.publishDate.toISOString(),
+  articleSection: category,
+  keywords: p.tags,
+  image: new URL(p.coverImage?.src ?? "/images/social-card.png", Astro.site).href,
+  mainEntityOfPage: url,
+};
+---
+
+<Base
+  title={`${p.seoTitle ?? p.title} | ${profile.name}`}
+  description={p.seoDescription ?? p.description}
+  label={p.title}
+  type="BlogPosting"
+  extraSchema={schema}
+  date={p.publishDate}
+  image={p.coverImage?.src}
+  imageAlt={p.coverImage?.alt}
+  paired={Boolean(translation)}
+  fragments={fragments}
+>
+  <div class="journal">
+    <article>
+      <header class="journal-masthead journal-article-head">
+        <div class="journal-wrap">
+          <a class="journal-link journal-back" href={localPath("/blog/", locale)}>
+            <Icon name="arrow" size={16} /> {t("Back to Journal", "بازگشت به مجله")}
+          </a>
+          <div class="journal-article-title">
+            <p class="journal-label">{category}</p>
+            <h1>{p.title}</h1>
+            <p class="journal-dek">{p.description}</p>
+            <div class="journal-meta journal-byline">
+              <a href={localPath("/about/", locale)}>{profile.name}</a>
+              <time datetime={p.publishDate.toISOString()}>{dateLabel(p.publishDate, locale)}</time>
+              <span>{readingLabel(post, locale)}</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {p.coverImage && (
+        <figure class="journal-wrap journal-article-figure">
+          <JournalCover cover={p.coverImage} priority />
+          {p.coverImage.caption && <figcaption>{p.coverImage.caption}</figcaption>}
+        </figure>
+      )}
+
+      <div class="journal-wrap journal-reading">
+        {sections.length >= 3 && (
+          <nav class="journal-contents" aria-label={t("Table of contents", "فهرست مطالب")}>
+            <h2 class="journal-label">{t("On this page", "در این صفحه")}</h2>
+            <ul>
+              {sections.map(({ slug, text }) => <li><a href={`#${slug}`}>{text}</a></li>)}
+            </ul>
+          </nav>
+        )}
+
+        <div class="journal-story">
+          {p.takeaways.length > 0 && (
+            <section class="journal-takeaways" aria-labelledby="journal-takeaways-heading">
+              <h2 id="journal-takeaways-heading">{t("Key takeaways", "نکات کلیدی")}</h2>
+              <ul>{p.takeaways.map((item) => <li>{item}</li>)}</ul>
+            </section>
+          )}
+          <div class="journal-body"><Content /></div>
+
+          <div class="journal-story-footer">
+            {p.tags.length > 0 && (
+              <ul class="journal-tags" aria-label={t("Article tags", "برچسب‌های مقاله")}>
+                {p.tags.map((tag) => <li>{tag}</li>)}
+              </ul>
+            )}
+            <div class="journal-share">
+              <a class="journal-link" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`}>
+                {t("Share on LinkedIn", "اشتراک‌گذاری در لینکدین")} <Icon name="diagonal" size={15} />
+              </a>
+              <button class="journal-copy" type="button" data-article-url={url}
+                data-copied={t("Link copied.", "پیوند کپی شد.")}
+                data-copy-error={t("Copy the address from your browser.", "نشانی را از نوار آدرس مرورگر کپی کنید.")}
+                hidden>
+                <Icon name="link" size={16} /> {t("Copy article link", "کپی پیوند مقاله")}
+              </button>
+              <span id="journal-copy-status" aria-live="polite"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    {related.length > 0 && (
+      <section class="journal-wrap journal-related" aria-labelledby="journal-related-heading">
+        <header class="journal-section-head">
+          <h2 id="journal-related-heading">{t("Related articles", "مقاله‌های مرتبط")}</h2>
+        </header>
+        <div class="journal-list">
+          {related.map(({ entry }) => <JournalEntry post={entry} />)}
+        </div>
+      </section>
+    )}
+
+    {(newer || older) && (
+      <nav class="journal-wrap journal-neighbours" aria-label={t("More from the Journal", "مقاله‌های دیگر مجله")}>
+        {newer && (
+          <a rel="prev" href={articleUrl(newer.id, locale)}>
+            <span class="journal-label"><Icon name="arrow" size={16} /> {t("Previous article", "مقالهٔ قبلی")}</span>
+            <span class="journal-neighbour-title">{newer.data.title}</span>
+          </a>
+        )}
+        {older && (
+          <a rel="next" href={articleUrl(older.id, locale)}>
+            <span class="journal-label">{t("Next article", "مقالهٔ بعدی")} <Icon name="arrow" size={16} /></span>
+            <span class="journal-neighbour-title">{older.data.title}</span>
+          </a>
+        )}
+      </nav>
+    )}
+  </div>
+  <script>
+    const copy = document.querySelector<HTMLButtonElement>("[data-article-url]");
+    const status = document.querySelector("#journal-copy-status");
+    if (copy && navigator.clipboard && status) {
+      copy.hidden = false;
+      copy.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(copy.dataset.articleUrl!);
+          status.textContent = copy.dataset.copied!;
+        } catch {
+          status.textContent = copy.dataset.copyError!;
+        }
+      });
+    }
+  </script>
+</Base>

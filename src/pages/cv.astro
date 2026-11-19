@@ -3,16 +3,23 @@ import Base from "../layouts/Base.astro";
 import PageHead from "../components/PageHead.astro";
 import Icon from "../components/Icon.astro";
 import PublicationCard from "../components/Publication.astro";
-import { profile, achievements, publications } from "../data/profile";
+import { publications } from "../data/profile";
+import { localeFromPath, translator, localPath } from "../i18n/locales";
+import { achievementsFor, profileFor } from "../i18n/profile";
+
+const locale = localeFromPath(Astro.url.pathname);
+const t = translator(locale);
+const route = (path: string) => localPath(path, locale);
+const profile = profileFor(locale);
 ---
 
 <Base
-  title="Curriculum Vitae | Mohammadreza Norouzi"
-  description="View Mohammadreza Norouzi’s online CV, including education, medical and research experience, scientific writing, and professional interests."
-  label="Curriculum vitae"
+  title={t("Curriculum Vitae | Mohammadreza Norouzi", "رزومهٔ حرفه‌ای | محمدرضا نوروزی")}
+  description={t("View Mohammadreza Norouzi’s online CV, including education, medical and research experience, scientific writing, and professional interests.", "رزومهٔ آنلاین محمدرضا نوروزی را بخوانید. این رزومه تحصیلات، تجربهٔ پزشکی و پژوهشی، نگارش علمی و علایق حرفه‌ای او را در بر می‌گیرد.")}
+  label={t("Curriculum vitae", "رزومه")}
 >
   <PageHead
-    title="Curriculum vitae"
+    title={t("Curriculum vitae", "رزومه")}
     description={profile.title}
     parent={profile.location}
   />
@@ -21,24 +28,24 @@ import { profile, achievements, publications } from "../data/profile";
       {profile.cvPath ? (
         <a class="button primary" href={profile.cvPath} download>
           <Icon name="file" />
-          Download CV
+          {t("Download CV", "دریافت رزومه به زبان انگلیسی")}
         </a>
       ) : (
         <span class="pdf">
           <Icon name="file" />
-          CV download · PDF available soon
+          {t("CV download · PDF available soon", "نسخهٔ پی‌دی‌اف رزومه هنوز در دسترس نیست")}
         </span>
       )}
     </div>
     <section>
-      <h2>Professional summary</h2>
+      <h2>{t("Professional summary", "خلاصهٔ سوابق حرفه‌ای")}</h2>
       <div>
         <p>{profile.summary}</p>
         <p class="note">{profile.disclosure}</p>
       </div>
     </section>
     <section>
-      <h2>Education</h2>
+      <h2>{t("Education", "تحصیلات")}</h2>
       <div>
         {profile.education
           .map((e) => (
@@ -52,54 +59,54 @@ import { profile, achievements, publications } from "../data/profile";
       </div>
     </section>
     <section>
-      <h2>Professional experience</h2>
+      <h2>{t("Professional experience", "سوابق حرفه‌ای")}</h2>
       <div>
         {profile.experience.map((e) => (
           <div>
-            <h3>{e.title} | {e.date}</h3>
+            <h3>{e.title} | <bdi dir="ltr">{e.date}</bdi></h3>
             <p>{e.place}</p>
           </div>
         ))}
       </div>
     </section>
     <section>
-      <h2>Professional areas</h2>
-      <p>Strategic Thinking · Healthcare Management · Problem-Solving · Leadership & Team Coordination · Digital Health · Entrepreneurship</p>
+      <h2>{t("Professional areas", "حوزه‌های فعالیت حرفه‌ای")}</h2>
+      <p>{t("Strategic Thinking · Healthcare Management · Problem-Solving · Leadership & Team Coordination · Digital Health · Entrepreneurship", "تفکر راهبردی · مدیریت سلامت · حل مسئله · رهبری و هماهنگی تیم · سلامت دیجیتال · کارآفرینی")}</p>
     </section>
     <section>
-      <h2>Publications</h2>
+      <h2>{t("Publications", "آثار علمی")}</h2>
       <div>
         {publications.length ? (
           publications.map((record) => <PublicationCard record={record} />)
         ) : (
-          <a href="/research/">
-            View publication status in the research portfolio
+          <a href={route("/research/")}>
+            {t("View publication status in the research portfolio", "وضعیت آثار علمی را در بخش پژوهش ببینید")}
           </a>
         )}
       </div>
     </section>
     <section>
-      <h2>Certifications</h2>
+      <h2>{t("Certifications", "گواهی‌نامه‌ها")}</h2>
       <div>
         {profile.training.map((name) => <p>{name}</p>)}
       </div>
     </section>
     <section>
-      <h2>Entrepreneurship</h2>
+      <h2>{t("Entrepreneurship", "کارآفرینی")}</h2>
       <div>
-        {achievements.length ? (
+        {achievementsFor(locale).length ? (
           <ul>
-            {achievements.map((a) => (
+            {achievementsFor(locale).map((a) => (
               <li>{a}</li>
             ))}
           </ul>
         ) : (
-          <p>No additional academic distinctions are listed.</p>
+          <p>{t("No additional academic distinctions are listed.", "افتخار دانشگاهی دیگری در این بخش درج نشده است.")}</p>
         )}
       </div>
     </section>
     <section>
-      <h2>Clinical competencies</h2>
+      <h2>{t("Clinical competencies", "مهارت‌های بالینی")}</h2>
       <div class="tags">
         {profile.skills.map((s) => (
           <span>{s}</span>
@@ -107,7 +114,7 @@ import { profile, achievements, publications } from "../data/profile";
       </div>
     </section>
     <section>
-      <h2>Professional interests</h2>
+      <h2>{t("Professional interests", "علایق حرفه‌ای")}</h2>
       <div class="tags">
         {profile.interests.map((r) => (
           <span>{r}</span>

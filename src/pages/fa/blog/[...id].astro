@@ -1,0 +1,10 @@
+---
+import JournalArticle from "../../../components/JournalArticle.astro";
+import { articlePaths } from "../../../lib/articles";
+
+export function getStaticPaths() {
+  return articlePaths("fa");
+}
+---
+
+<JournalArticle {...Astro.props} />

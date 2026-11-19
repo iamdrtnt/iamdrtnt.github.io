@@ -3,21 +3,26 @@ import Base from "../layouts/Base.astro";
 import PageHead from "../components/PageHead.astro";
 import Timeline from "../components/Timeline.astro";
 import ProfessionalTimeline from "../components/ProfessionalTimeline.astro";
-import { profile } from "../data/profile";
+import { localeFromPath, translator } from "../i18n/locales";
+import { profileFor } from "../i18n/profile";
+
+const locale = localeFromPath(Astro.url.pathname);
+const t = translator(locale);
+const profile = profileFor(locale);
 ---
 
 <Base
-  title="Education and Experience | Mohammadreza Norouzi"
-  description="Explore Mohammadreza Norouzi’s MD education, Executive Healthcare MBA certificate, general medical practice in Iran, and scientific writing experience."
-  label="Education and experience"
+  title={t("Education and Experience | Mohammadreza Norouzi", "تحصیلات و سوابق حرفه‌ای | محمدرضا نوروزی")}
+  description={t("Explore Mohammadreza Norouzi’s MD education, Executive Healthcare MBA certificate, general medical practice in Iran, and scientific writing experience.", "با تحصیلات پزشکی، گواهی مدیریت اجرایی در سلامت، سابقهٔ طبابت عمومی در ایران و تجربهٔ نگارش علمی محمدرضا نوروزی آشنا شوید.")}
+  label={t("Education and experience", "تحصیلات و سوابق")}
 >
   <PageHead
-    title="Education & experience"
-    description="Clinical experience, scientific curiosity, and an interest in healthcare innovation have shaped my professional journey."
+    title={t("Education & experience", "تحصیلات و سوابق حرفه‌ای")}
+    description={t("Clinical experience, scientific curiosity, and an interest in healthcare innovation have shaped my professional journey.", "تجربهٔ بالینی، کنجکاوی علمی و علاقه به نوآوری در سلامت مسیر حرفه‌ای من را شکل داده‌اند.")}
   />
   <div class="wrap section dossier">
     <section>
-      <h2>Education</h2>
+      <h2>{t("Education", "تحصیلات")}</h2>
       <Timeline
         items={profile.education.map((e) => ({
           title: e.title,
@@ -27,7 +32,7 @@ import { profile } from "../data/profile";
       />
     </section>
     <section>
-      <h2>Professional experience</h2>
+      <h2>{t("Professional experience", "سوابق حرفه‌ای")}</h2>
       <ProfessionalTimeline />
     </section>
     <p class="note">{profile.disclosure}</p>

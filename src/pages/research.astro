@@ -4,33 +4,40 @@ import PageHead from "../components/PageHead.astro";
 import PublicationCard from "../components/Publication.astro";
 import Icon from "../components/Icon.astro";
 import {
-  profile,
   publications,
   projects,
   presentations,
 } from "../data/profile";
+import { localeFromPath, translator, localPath } from "../i18n/locales";
+import { profileFor } from "../i18n/profile";
+
+const locale = localeFromPath(Astro.url.pathname);
+const t = translator(locale);
+const route = (path: string) => localPath(path, locale);
+const profile = profileFor(locale);
+
 const academic = profile.profiles.filter((p) =>
   ["ORCID", "Google Scholar", "ResearchGate", "PubMed"].includes(p.label),
 );
 ---
 
 <Base
-  title="Research and Publications | Mohammadreza Norouzi"
-  description="Browse Mohammadreza Norouzi’s research interests in clinical medicine, neuroscience, artificial intelligence in healthcare, and evidence-based medicine."
-  label="Research"
+  title={t("Research and Publications | Mohammadreza Norouzi", "پژوهش و آثار علمی | محمدرضا نوروزی")}
+  description={t("Browse Mohammadreza Norouzi’s research interests in clinical medicine, neuroscience, artificial intelligence in healthcare, and evidence-based medicine.", "با علایق پژوهشی محمدرضا نوروزی در پزشکی بالینی، علوم اعصاب، هوش مصنوعی در سلامت و پزشکی مبتنی بر شواهد آشنا شوید.")}
+  label={t("Research", "پژوهش")}
 >
   <PageHead
-    title="Publications & Research"
-    parent="Exploring Questions. Advancing Understanding."
-    description={"My academic interests focus on clinical research, evidence-based medicine, and emerging applications of artificial intelligence in healthcare. This section presents verified scholarly publications and selected research activities, reflecting my commitment to scientific inquiry and critical thinking. My broader interests also extend to neuroscience, particularly understanding the complexity and function of the human brain."}
+    title={t("Publications & Research", "آثار علمی و پژوهش")}
+    parent={t("Exploring Questions. Advancing Understanding.", "از طرح پرسش تا درک عمیق‌تر")}
+    description={t("My academic interests focus on clinical research, evidence-based medicine, and emerging applications of artificial intelligence in healthcare. This section presents verified scholarly publications and selected research activities, reflecting my commitment to scientific inquiry and critical thinking. My broader interests also extend to neuroscience, particularly understanding the complexity and function of the human brain.", "علایق دانشگاهی من بر پژوهش بالینی، پزشکی مبتنی بر شواهد و کاربردهای نوظهور هوش مصنوعی در سلامت متمرکز است. در این بخش، آثار علمی تأییدشده و فعالیت‌های پژوهشی منتخب ارائه می‌شوند که نشان‌دهندهٔ توجه من به پژوهش علمی و تفکر نقادانه‌اند. به علوم اعصاب نیز علاقه دارم، به‌ویژه به شناخت پیچیدگی و عملکرد مغز انسان.")}
   />
   <div class="wrap section">
-    <h2>Research interests</h2>
+    <h2>{t("Research interests", "علایق پژوهشی")}</h2>
     <div class="card-grid spaced">
       {profile.research.map((r) => (
         <section
           class="interest-card"
-          id={r.title.toLowerCase().replaceAll(" ", "-")}
+          id={r.id}
         >
           <span class="iconblock">
             <Icon name={r.icon} size={24} />
@@ -44,43 +51,41 @@ const academic = profile.profiles.filter((p) =>
   <div class="tint">
     <div class="wrap section dossier">
       <section id="publications">
-        <h2>Publications</h2>
+        <h2>{t("Publications", "آثار علمی")}</h2>
         <div>
           {publications.length ? (
             publications.map((record) => <PublicationCard record={record} />)
           ) : (
             <div class="empty">
               <Icon name="book" />
-              <h3>Publications coming soon</h3>
+              <h3>{t("Publications coming soon", "آثار علمی به‌زودی در دسترس خواهند بود")}</h3>
               <p>
-                Verified citations and links will appear here as they become
-                available.
+                {t("Verified citations and links will appear here as they become available.", "ارجاع‌ها و پیوندهای تأییدشده پس از آماده شدن در این بخش قرار می‌گیرند.")}
               </p>
             </div>
           )}
         </div>
       </section>
       <section>
-        <h2>Research projects</h2>
+        <h2>{t("Research projects", "طرح‌های پژوهشی")}</h2>
         <div>
           {projects.length ? (
             projects.map((p) => (
               <article>
                 <h3>{p.title}</h3>
                 <p>{p.description}</p>
-                {p.url && <a href={p.url}>Project details</a>}
+                {p.url && <a href={p.url}>{t("Project details", "جزئیات طرح")}</a>}
               </article>
             ))
           ) : (
             <p>
-              Project descriptions will be added when details are available for
-              public sharing.
+              {t("Project descriptions will be added when details are available for public sharing.", "شرح طرح‌ها زمانی اضافه می‌شود که جزئیات آن‌ها قابل انتشار عمومی باشد.")}
             </p>
           )}
         </div>
       </section>
       <section>
-        <h2>Conference presentations</h2>
+        <h2>{t("Conference presentations", "ارائه‌ها در همایش‌ها")}</h2>
         <div>
           {presentations.length ? (
             presentations.map((p) => (
@@ -89,19 +94,23 @@ const academic = profile.profiles.filter((p) =>
               </p>
             ))
           ) : (
-            <p>No verified conference records are listed.</p>
+            <p>{t("No verified conference records are listed.", "هیچ سابقهٔ تأییدشده‌ای از ارائه در همایش‌ها در این بخش درج نشده است.")}</p>
           )}
         </div>
       </section>
       <section>
-        <h2>Scientific activities</h2>
+        <h2>{t("Scientific activities", "فعالیت‌های علمی")}</h2>
         <p>
-          My interests span clinical research, evidence-based medicine, and the application of artificial intelligence in healthcare. I am particularly fascinated by the human brain, its complex functions, and the questions that remain unanswered about how it works. My <a href="/blog/">blog</a> explores the methods and
+          {locale === "fa" ? (<>
+          علایق من پژوهش بالینی، پزشکی مبتنی بر شواهد و کاربرد هوش مصنوعی در سلامت را در بر می‌گیرد. به مغز انسان، کارکردهای پیچیدهٔ آن و پرسش‌های بی‌پاسخ دربارهٔ نحوهٔ عملکردش علاقهٔ ویژه‌ای دارم. در <a href={route("/blog/")}>مجله</a> به روش‌ها و پرسش‌های مرتبط با این علایق می‌پردازم.
+          </>) : (<>
+          My interests span clinical research, evidence-based medicine, and the application of artificial intelligence in healthcare. I am particularly fascinated by the human brain, its complex functions, and the questions that remain unanswered about how it works. My <a href={route("/blog/")}>blog</a> explores the methods and
           questions behind these interests.
+          </>)}
         </p>
       </section>
       <section>
-        <h2>Academic profiles</h2>
+        <h2>{t("Academic profiles", "نمایه‌های علمی")}</h2>
         <div>
           {academic.length ? (
             academic.map((p) => (
@@ -110,7 +119,7 @@ const academic = profile.profiles.filter((p) =>
               </p>
             ))
           ) : (
-            <p>Academic profile links will be added once verified.</p>
+            <p>{t("Academic profile links will be added once verified.", "پیوند نمایه‌های علمی پس از تأیید در این بخش قرار می‌گیرد.")}</p>
           )}
         </div>
       </section>
