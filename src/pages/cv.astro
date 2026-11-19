@@ -56,8 +56,8 @@ import { profile, achievements, publications } from "../data/profile";
       <div>
         {profile.experience.map((e) => (
           <div>
-            <h3>{e.title}</h3>
-            <p>{e.label}</p>
+            <h3>{e.title} | {e.date}</h3>
+            <p>{e.place}</p>
           </div>
         ))}
       </div>
