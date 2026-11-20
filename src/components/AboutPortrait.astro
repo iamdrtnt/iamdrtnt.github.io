@@ -48,8 +48,9 @@ const t = translator(localeFromPath(Astro.url.pathname));
   .portrait-subject {
     position: relative;
     width: 100%;
-    aspect-ratio: 1122 / 1402;
-    object-fit: cover;
+    height: auto;
+    object-fit: contain;
+    object-position: center bottom;
     filter: drop-shadow(2px -1px 2px light-dark(#7892a84a, #a4c1df47));
   }
 
