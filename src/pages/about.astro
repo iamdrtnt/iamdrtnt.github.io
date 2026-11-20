@@ -14,10 +14,10 @@ const route = (path: string) => localPath(path, locale);
 const profile = profileFor(locale);
 
 const portraits = import.meta.glob<ImageMetadata>(
-  "../assets/mohammadreza-norouzi-portrait.webp",
+  "../assets/mohammadreza-norouzi-portrait.png",
   { eager: true, import: "default" },
 );
-const portrait = portraits["../assets/mohammadreza-norouzi-portrait.webp"];
+const portrait = portraits["../assets/mohammadreza-norouzi-portrait.png"];
 ---
 
 <Base
