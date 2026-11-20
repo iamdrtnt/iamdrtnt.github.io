@@ -20,7 +20,10 @@ const t = translator(localeFromPath(Astro.url.pathname));
     <Image
       class="portrait-subject"
       src={image}
-      alt={t("Portrait of Mohammadreza Norouzi", "پرترهٔ محمدرضا نوروزی")}
+      alt={t(
+        "Mohammadreza Norouzi smiling in a black blazer",
+        "محمدرضا نوروزی با کت مشکی و لبخند",
+      )}
       format="webp"
       quality={84}
       widths={[320, 480, 720, 960, 1120].filter((width) => width <= image.width)}
@@ -45,6 +48,8 @@ const t = translator(localeFromPath(Astro.url.pathname));
   .portrait-subject {
     position: relative;
     width: 100%;
+    aspect-ratio: 1122 / 1402;
+    object-fit: cover;
     filter: drop-shadow(2px -1px 2px light-dark(#7892a84a, #a4c1df47));
   }
 
